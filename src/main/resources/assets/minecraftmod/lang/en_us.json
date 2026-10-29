@@ -1,0 +1,11 @@
+{
+  "effect.minecraftmod.oksijensizlik": "Oksijen Yok",
+  "death.attack.oxygen_deprivation": "%1$s died from oxygen deprivation",
+  "item.minecraftmod.return_book": "Geri Dönüş",
+  "item.minecraftmod.return_stick": "Geri Dönüş Çubuğu",
+  "enchantment.minecraftmod.geri_donus": "Geri Dönüş",
+  "advancements.minecraftmod.root.title": "Welcome to the HELL",
+  "advancements.minecraftmod.root.description": "Enter the Minecraft Mod.",
+  "advancements.minecraftmod.welcome_to_hell.title": "Welcome to the HELL",
+  "advancements.minecraftmod.welcome_to_hell.description": "Enter the Minecraft Mod."
+}

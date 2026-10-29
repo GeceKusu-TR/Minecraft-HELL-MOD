@@ -1,0 +1,21 @@
+gradle.projectsEvaluated {
+    def audit = rootProject.sourceSets.create('audit')
+    audit.compileClasspath += rootProject.sourceSets.main.compileClasspath + rootProject.sourceSets.main.output
+    def auditJar = rootProject.tasks.register('bugAuditJar', Jar) {
+        dependsOn rootProject.tasks.named('auditClasses')
+        archiveFileName = 'minecraftmod-bug-audit.jar'
+        destinationDirectory = rootProject.layout.buildDirectory.dir('audit')
+        from audit.output
+    }
+    rootProject.tasks.named('runServer') {
+        dependsOn auditJar
+        jvmArgs "-Dfabric.addMods=${auditJar.get().archiveFile.get().asFile.absolutePath}"
+        def result = rootProject.file('build/audit/success.txt')
+        jvmArgs "-Dminecraftmod.auditResult=${result.absolutePath}"
+        doFirst { result.delete() }
+        doLast {
+            if (!result.exists()) throw new GradleException('Bug audit did not complete; inspect run/logs/latest.log')
+        }
+        args '--initSettings'
+    }
+}

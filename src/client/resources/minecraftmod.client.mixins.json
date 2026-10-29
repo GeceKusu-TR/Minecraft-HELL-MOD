@@ -1,0 +1,19 @@
+{
+	"required": true,
+	"package": "com.example.minecraftmod.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"TitleScreenMixin",
+		"OxygenEffectSpriteMixin",
+		"PeacefulFoodHudMixin",
+		"AtmosphericFogMixin",
+		"BookViewScreenMixin",
+		"EndLoadingGuiMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
