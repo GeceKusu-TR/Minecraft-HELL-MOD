@@ -24,6 +24,7 @@ public final class OxygenRules {
 	public static final int CRITICAL_OXYGEN_HEIGHT = 200;
 	public static final int DEADLY_OXYGEN_HEIGHT = 210;
 	public static final int DAMAGE_INTERVAL = 20;
+	private static final float DEADLY_OXYGEN_DAMAGE = 10.0F;
 	public static final int INFINITE_EFFECT_DURATION = MobEffectInstance.INFINITE_DURATION;
 	public static final int TITLE_STAY_TICKS = 2_147_483_647;
 	public static final Identifier PEACEFUL_HEALTH_CAP_ID = MinecraftMod.id("peaceful_health_cap");
@@ -77,7 +78,7 @@ public final class OxygenRules {
 		return switch (oxygenStage(player)) {
 			case LOW -> hasLeatherHelmet(player) ? 0.0F : DifficultyScalingRules.more(4.0F);
 			case CRITICAL -> hasLeatherHelmet(player) ? 0.0F : DifficultyScalingRules.more(6.0F);
-			case DEADLY -> DifficultyScalingRules.more(10.0F);
+			case DEADLY -> DEADLY_OXYGEN_DAMAGE;
 			case NONE -> 0.0F;
 		};
 	}

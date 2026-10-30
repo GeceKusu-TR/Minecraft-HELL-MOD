@@ -13,6 +13,7 @@ public final class FireRules {
 	private static final int EASY_FIRE_TICKS = 15 * 20;
 	private static final int NORMAL_FIRE_TICKS = 30 * 20;
 	private static final int HARD_FIRE_TICKS = 60 * 20;
+	private static final int HARDCORE_FIRE_TICKS = 90 * 20;
 	private static final float PLAYER_FIRE_DAMAGE = 2.0F;
 
 	private FireRules() {
@@ -28,6 +29,10 @@ public final class FireRules {
 	}
 
 	public static int fireTicksFor(Level level) {
+		if (level.getLevelData().isHardcore()) {
+			return HARDCORE_FIRE_TICKS;
+		}
+
 		int baseTicks = switch (level.getDifficulty()) {
 			case EASY -> EASY_FIRE_TICKS;
 			case NORMAL -> NORMAL_FIRE_TICKS;
@@ -42,7 +47,7 @@ public final class FireRules {
 	}
 
 	public static boolean shouldBurnForever(Entity entity) {
-		return entity.level().getDifficulty() == Difficulty.PEACEFUL || entity.level().getLevelData().isHardcore();
+		return entity.level().getDifficulty() == Difficulty.PEACEFUL;
 	}
 
 	public static boolean shouldTakePersistentFireDamage(ServerPlayer player) {

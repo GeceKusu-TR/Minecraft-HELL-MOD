@@ -10,7 +10,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 public final class EndCompletionRules {
-	private static final String COMPLETED_TAG = "minecraftmod_end_completed";
 	private static final int PORTAL_SEARCH_RADIUS = 4;
 	private static final int PORTAL_VERTICAL_RADIUS = 2;
 
@@ -18,7 +17,7 @@ public final class EndCompletionRules {
 	}
 
 	public static boolean isCompleted(ServerPlayer player) {
-		return player.getTags().contains(COMPLETED_TAG);
+		return player.getTags().contains(DifficultyScalingRules.COMPLETED_TAG);
 	}
 
 	public static boolean isHardcoreEscalated(ServerPlayer player) {
@@ -33,11 +32,11 @@ public final class EndCompletionRules {
 	public static void onEndReturn(ServerPlayer player, ServerLevel sourceLevel, BlockPos sourcePosition) {
 		if (!(player.level() instanceof ServerLevel level)
 			|| level.dimension() != Level.OVERWORLD
-			|| player.getTags().contains(COMPLETED_TAG)) {
+			|| isCompleted(player)) {
 			return;
 		}
 
-		player.addTag(COMPLETED_TAG);
+		player.addTag(DifficultyScalingRules.COMPLETED_TAG);
 		String elapsed = formatGameTime(level.getGameTime());
 		if (level.getLevelData().isHardcore()) {
 			player.addTag(DifficultyScalingRules.HARDCORE_ESCALATED_TAG);
@@ -51,6 +50,7 @@ public final class EndCompletionRules {
 			send(player, "Herneyse oyunu " + elapsed + " sürede bitirdin.");
 			send(player, "Oyun dışı olan süreyi MAALESEF GÖREMİYORUM O KADARDA DEĞİL!");
 			send(player, "Herneyse.. bakalım bu sefer bu modda oyunu bitirebilecekmisin? Kendine olan güvenin varsa şuan oyunu kapat!");
+			DifficultyScalingRules.activateNormalEscalation();
 		}
 		ServerPlayNetworking.send(player, new CompletionHudPayload(true, isHardcoreEscalated(player)));
 
