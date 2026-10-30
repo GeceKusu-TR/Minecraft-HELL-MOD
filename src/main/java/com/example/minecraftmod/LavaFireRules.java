@@ -23,7 +23,7 @@ public final class LavaFireRules {
 	}
 
 	public static void tickGhastLavaFireball(LargeFireball fireball) {
-		if (!GhastRules.isGhastFireball(fireball) || fireball.tickCount % LAVA_TRAIL_INTERVAL_TICKS != 0) {
+		if (!GhastRules.isGhastFireball(fireball) || fireball.tickCount % DifficultyScalingRules.sooner(LAVA_TRAIL_INTERVAL_TICKS) != 0) {
 			return;
 		}
 
@@ -57,8 +57,8 @@ public final class LavaFireRules {
 				AdvancementRules.markGhastFireballBurn(serverPlayer);
 			}
 
-			livingEntity.hurtServer(level, livingEntity.damageSources().lava(), LAVA_PROJECTILE_DAMAGE);
-			livingEntity.igniteForSeconds(IGNITE_SECONDS);
+			livingEntity.hurtServer(level, livingEntity.damageSources().lava(), DifficultyScalingRules.more(LAVA_PROJECTILE_DAMAGE));
+			livingEntity.igniteForSeconds((int)DifficultyScalingRules.more(IGNITE_SECONDS));
 		}
 	}
 

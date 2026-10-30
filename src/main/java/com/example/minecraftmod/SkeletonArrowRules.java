@@ -25,7 +25,7 @@ public final class SkeletonArrowRules {
 
 		Entity hitEntity = hitResult.getEntity();
 		if (!(hitEntity instanceof Player player)) {
-			arrow.setBaseDamage(SKELETON_ARROW_DAMAGE);
+			arrow.setBaseDamage(DifficultyScalingRules.more(SKELETON_ARROW_DAMAGE));
 			return false;
 		}
 
@@ -35,13 +35,13 @@ public final class SkeletonArrowRules {
 			return true;
 		}
 
-		arrow.setBaseDamage(SKELETON_ARROW_DAMAGE);
+		arrow.setBaseDamage(DifficultyScalingRules.more(SKELETON_ARROW_DAMAGE));
 		return false;
 	}
 
 	public static boolean hurtWithSkeletonArrowCap(AbstractArrow arrow, Entity hitEntity, DamageSource damageSource, float amount) {
 		if (arrow.getOwner() instanceof AbstractSkeleton && hitEntity instanceof Player) {
-			return hurtOnServer(hitEntity, damageSource, (float) Math.min(amount, SKELETON_ARROW_DAMAGE));
+			return hurtOnServer(hitEntity, damageSource, (float) Math.min(amount, DifficultyScalingRules.more(SKELETON_ARROW_DAMAGE)));
 		}
 
 		return hurtOnServer(hitEntity, damageSource, amount);
@@ -59,7 +59,7 @@ public final class SkeletonArrowRules {
 			return;
 		}
 
-		shield.hurtAndBreak(SHIELD_DAMAGE, player, hand);
+		shield.hurtAndBreak(DifficultyScalingRules.more(SHIELD_DAMAGE), player, hand);
 	}
 
 	private static boolean hurtOnServer(Entity entity, DamageSource damageSource, float amount) {

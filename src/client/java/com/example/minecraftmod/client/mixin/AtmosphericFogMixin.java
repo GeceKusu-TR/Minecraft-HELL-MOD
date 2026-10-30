@@ -19,6 +19,14 @@ public abstract class AtmosphericFogMixin {
 			return;
 		}
 
+		if (level.getLevelData().isHardcore()) {
+			fogData.environmentalStart = 0.0F;
+			fogData.environmentalEnd = 56.0F;
+			fogData.skyEnd = 56.0F;
+			fogData.cloudEnd = 56.0F;
+			return;
+		}
+
 		float clearDistance = Math.max(renderDistance, 512.0F);
 		fogData.environmentalStart = clearDistance;
 		fogData.environmentalEnd = clearDistance;

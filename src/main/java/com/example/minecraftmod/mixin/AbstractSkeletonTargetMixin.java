@@ -13,6 +13,6 @@ public abstract class AbstractSkeletonTargetMixin {
 	@Inject(method = "registerGoals", at = @At("TAIL"))
 	private void minecraftmod$addPlayerTargetGoal(CallbackInfo ci) {
 		GoalSelector targetSelector = ((MonsterAccessor)(Object)this).minecraftmod$getTargetSelector();
-		targetSelector.addGoal(0, new SkeletonPlayerTargetGoal((AbstractSkeleton)(Object)this, 50.0D));
+		targetSelector.addGoal(0, new SkeletonPlayerTargetGoal((AbstractSkeleton)(Object)this, 36.0D));
 	}
 }

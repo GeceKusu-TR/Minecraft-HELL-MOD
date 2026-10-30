@@ -20,6 +20,8 @@ import net.minecraft.world.item.enchantment.Enchantments;
 public final class AnimalAttackRules {
 	public static final double ANIMAL_HEALTH = 20.0D;
 	private static final double TARGET_RANGE = 24.0D;
+	private static final double HERD_ALERT_RADIUS = 8.0D;
+	private static final int MAX_HERD_ATTACKERS = 3;
 	private static final double ATTACK_RANGE_SQR = 4.0D;
 	private static final double CHASE_SPEED = 1.25D;
 	private static final double DIRECT_CHASE_PUSH = 0.08D;
@@ -38,14 +40,15 @@ public final class AnimalAttackRules {
 
 	public static void ensureAnimalHealth(Animal animal) {
 		AttributeInstance maxHealth = animal.getAttribute(Attributes.MAX_HEALTH);
-		if (maxHealth == null || maxHealth.getBaseValue() == ANIMAL_HEALTH) {
+		double scaledHealth = DifficultyScalingRules.more(ANIMAL_HEALTH);
+		if (maxHealth == null || maxHealth.getBaseValue() == scaledHealth) {
 			return;
 		}
 
 		float oldMaxHealth = animal.getMaxHealth();
-		maxHealth.setBaseValue(ANIMAL_HEALTH);
+		maxHealth.setBaseValue(scaledHealth);
 		if (animal.getHealth() >= oldMaxHealth || animal.getHealth() > animal.getMaxHealth()) {
-			animal.setHealth((float)ANIMAL_HEALTH);
+			animal.setHealth((float)scaledHealth);
 		}
 	}
 
@@ -74,11 +77,13 @@ public final class AnimalAttackRules {
 
 		animal.setTarget(target);
 		animal.getLookControl().setLookAt(target, 30.0F, 30.0F);
-		if (animal.tickCount % 10 == 0 || animal.getNavigation().isDone()) {
-			animal.getNavigation().moveTo(target, CHASE_SPEED);
+		if (animal.tickCount % DifficultyScalingRules.sooner(10) == 0 || animal.getNavigation().isDone()) {
+			animal.getNavigation().moveTo(target, DifficultyScalingRules.more(CHASE_SPEED));
 		}
 		pushTowardTarget(animal, target);
-		if (animal.distanceToSqr(target) <= ATTACK_RANGE_SQR && animal.hasLineOfSight(target) && animal.tickCount % ATTACK_INTERVAL_TICKS == 0) {
+		if (animal.distanceToSqr(target) <= DifficultyScalingRules.more(ATTACK_RANGE_SQR)
+			&& animal.hasLineOfSight(target)
+			&& animal.tickCount % DifficultyScalingRules.sooner(ATTACK_INTERVAL_TICKS) == 0) {
 			performAnimalAttack(level, animal, target);
 		}
 	}
@@ -91,32 +96,54 @@ public final class AnimalAttackRules {
 		animal.swing(InteractionHand.MAIN_HAND);
 		if (LeatherHelmetRules.hasFullLeatherArmorSet(player)) {
 			// Yes, leather set again hahaahahah.
-			boolean hurt = player.hurtServer(level, animal.damageSources().mobAttack(animal), UNARMORED_ATTACK_DAMAGE);
+			boolean hurt = player.hurtServer(level, animal.damageSources().mobAttack(animal), DifficultyScalingRules.more(UNARMORED_ATTACK_DAMAGE));
 			if (hurt) {
 				hurtAnimalForLeatherSet(level, animal, player);
 			}
 			return hurt;
 		}
 
-		return player.hurtServer(level, animal.damageSources().mobAttack(animal), UNARMORED_ATTACK_DAMAGE);
+		return player.hurtServer(level, animal.damageSources().mobAttack(animal), DifficultyScalingRules.more(UNARMORED_ATTACK_DAMAGE));
 	}
 
 	public static float attackDamageFor(Player player, float originalAmount) {
 		if (LeatherHelmetRules.hasFullLeatherArmorSet(player)) {
 			// Yes, leather set again hahaahahah.
-			return rawDamageForTargetFinalDamage(player, FULL_LEATHER_FINAL_ATTACK_DAMAGE);
+			return rawDamageForTargetFinalDamage(player, DifficultyScalingRules.more(FULL_LEATHER_FINAL_ATTACK_DAMAGE));
 		}
 
 		if (hasFullArmorSet(player)) {
-			return rawDamageForTargetFinalDamage(player, FULL_ARMOR_FINAL_ATTACK_DAMAGE);
+			return rawDamageForTargetFinalDamage(player, DifficultyScalingRules.more(FULL_ARMOR_FINAL_ATTACK_DAMAGE));
 		}
 
-		return Math.max(originalAmount, UNARMORED_ATTACK_DAMAGE);
+		return Math.max(originalAmount, DifficultyScalingRules.more(UNARMORED_ATTACK_DAMAGE));
 	}
 
 	public static void hurtAnimalForLeatherSet(ServerLevel level, LivingEntity animal, Player player) {
 		if (LeatherHelmetRules.hasFullLeatherArmorSet(player)) {
-			animal.hurtServer(level, player.damageSources().thorns(player), FULL_LEATHER_REFLECT_DAMAGE);
+			animal.hurtServer(level, player.damageSources().thorns(player), DifficultyScalingRules.more(FULL_LEATHER_REFLECT_DAMAGE));
+		}
+	}
+
+	public static void triggerHerdAttack(ServerLevel level, Animal victim, Player attacker) {
+		if (!victim.isAlive() || victim.isBaby() || !canTarget(attacker)) {
+			return;
+		}
+
+		int alertedAnimals = 0;
+		for (Animal animal : level.getEntitiesOfClass(
+			Animal.class,
+			victim.getBoundingBox().inflate(DifficultyScalingRules.more(HERD_ALERT_RADIUS)),
+			candidate -> candidate != victim
+				&& candidate.isAlive()
+				&& !candidate.isBaby()
+				&& candidate.getTarget() != attacker
+		)) {
+			animal.setTarget(attacker);
+			alertedAnimals++;
+			if (alertedAnimals >= MAX_HERD_ATTACKERS) {
+				return;
+			}
 		}
 	}
 
@@ -129,7 +156,8 @@ public final class AnimalAttackRules {
 
 	private static Player nearestTarget(ServerLevel level, Animal animal) {
 		Player nearest = null;
-		double nearestDistance = TARGET_RANGE * TARGET_RANGE;
+		double targetRange = DifficultyScalingRules.more(TARGET_RANGE);
+		double nearestDistance = targetRange * targetRange;
 		for (ServerPlayer player : level.players()) {
 			if (!canTarget(player)) {
 				continue;

@@ -75,7 +75,7 @@ public final class OverworldLavaRules {
 		BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 		int baseX = chunk.getPos().getMinBlockX();
 		int baseZ = chunk.getPos().getMinBlockZ();
-		int remainingReplacements = PerformanceRules.OVERWORLD_WATER_TO_LAVA_REPLACEMENTS_PER_CHUNK_TICK;
+		int remainingReplacements = DifficultyScalingRules.more(PerformanceRules.OVERWORLD_WATER_TO_LAVA_REPLACEMENTS_PER_CHUNK_TICK);
 
 		for (int sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
 			LevelChunkSection section = sections[sectionIndex];

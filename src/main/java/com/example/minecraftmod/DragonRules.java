@@ -45,7 +45,7 @@ public final class DragonRules {
 
 		long gameTime = serverLevel.getGameTime();
 		Long lastBreathTick = LAST_FORCED_BREATH_TICKS.get(serverLevel);
-		if (lastBreathTick != null && gameTime - lastBreathTick < flameCycleTicks(dragon)) {
+		if (lastBreathTick != null && gameTime - lastBreathTick < DifficultyScalingRules.sooner(flameCycleTicks(dragon))) {
 			return;
 		}
 
@@ -98,7 +98,7 @@ public final class DragonRules {
 		}
 
 		int brokenCrystals = BROKEN_CRYSTALS.getOrDefault(serverLevel, 0);
-		return Math.max(MIN_FLAME_CYCLE_TICKS, BASE_FLAME_CYCLE_TICKS - brokenCrystals * FLAME_CYCLE_REDUCTION_PER_CRYSTAL);
+		return Math.max(DifficultyScalingRules.sooner(MIN_FLAME_CYCLE_TICKS), DifficultyScalingRules.sooner(BASE_FLAME_CYCLE_TICKS - brokenCrystals * FLAME_CYCLE_REDUCTION_PER_CRYSTAL));
 	}
 
 	public static void onDragonBreathCloudCreated(ServerLevel level, EnderDragon dragon, AreaEffectCloud cloud) {

@@ -1,6 +1,9 @@
 package com.example.minecraftmod.mixin;
 
 import com.example.minecraftmod.AdvancementRules;
+import com.example.minecraftmod.CompletionHudPayload;
+import com.example.minecraftmod.DifficultyScalingRules;
+import com.example.minecraftmod.EndCompletionRules;
 import com.example.minecraftmod.EndExperienceRules;
 import com.example.minecraftmod.EndTermsRules;
 import com.example.minecraftmod.FakePlayerRules;
@@ -12,10 +15,12 @@ import com.example.minecraftmod.PlayerRules;
 import com.example.minecraftmod.NetherRules;
 import com.example.minecraftmod.TaxRules;
 import com.example.minecraftmod.TestBookRules;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,6 +30,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerRulesMixin {
+	@Unique
+	private boolean minecraftmod$completionHudSyncInitialized;
+
+	@Unique
+	private boolean minecraftmod$completionHudCompleted;
+
 	@Unique
 	private int minecraftmod$sprintLockTicks;
 
@@ -58,6 +69,8 @@ public abstract class ServerPlayerRulesMixin {
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void minecraftmod$tickPlayerRules(CallbackInfo ci) {
 		ServerPlayer player = (ServerPlayer)(Object)this;
+		minecraftmod$syncCompletionHud(player);
+		DifficultyScalingRules.restoreFromPlayer(player);
 		if (!player.isAlive() || player.isDeadOrDying()) {
 			minecraftmod$resetFallState(player);
 			return;
@@ -84,6 +97,21 @@ public abstract class ServerPlayerRulesMixin {
 		AdvancementRules.tickInventoryAdvancements(player);
 		minecraftmod$fallAccelerationStep = PlayerRules.accelerateDangerousFalls(player, minecraftmod$fallAccelerationStep, minecraftmod$suppressCurrentAirborneFall);
 		minecraftmod$airFallDamageStep = PlayerRules.tickAirFallDamage(player, minecraftmod$airFallDamageStep, minecraftmod$suppressCurrentAirborneFall);
+	}
+
+	@Unique
+	private void minecraftmod$syncCompletionHud(ServerPlayer player) {
+		boolean completed = EndCompletionRules.isCompleted(player);
+		boolean hardcoreEscalated = EndCompletionRules.isHardcoreEscalated(player);
+		if (!minecraftmod$completionHudSyncInitialized
+			|| minecraftmod$completionHudCompleted != completed
+			|| player.tickCount % 20 == 0) {
+			if (ServerPlayNetworking.canSend(player, CompletionHudPayload.TYPE)) {
+				ServerPlayNetworking.send(player, new CompletionHudPayload(completed, hardcoreEscalated));
+			}
+			minecraftmod$completionHudSyncInitialized = true;
+			minecraftmod$completionHudCompleted = completed;
+		}
 	}
 
 	@Inject(method = "die", at = @At("HEAD"))
@@ -125,7 +153,11 @@ public abstract class ServerPlayerRulesMixin {
 
 	@Unique
 	private void minecraftmod$tickSprintPenalty(ServerPlayer player) {
-		if (player.gameMode.getGameModeForPlayer() != GameType.SURVIVAL || NetherRules.disablesSprintSlowdown(player)) {
+		boolean overworldRestriction = player.level().dimension() == Level.OVERWORLD;
+		boolean hardcoreRestriction = player.level().getLevelData().isHardcore();
+		if (player.gameMode.getGameModeForPlayer() != GameType.SURVIVAL
+			|| NetherRules.disablesSprintSlowdown(player)
+			|| !overworldRestriction && !hardcoreRestriction) {
 			minecraftmod$wasSprinting = false;
 			minecraftmod$sprintTicks = 0;
 			minecraftmod$sprintLockTicks = 0;
@@ -192,7 +224,7 @@ public abstract class ServerPlayerRulesMixin {
 
 	@Unique
 	private void minecraftmod$tickPersistentFireDamage(ServerPlayer player) {
-		if (!(player.level() instanceof ServerLevel level) || player.tickCount % FireRules.PLAYER_FIRE_DAMAGE_INTERVAL != 0) {
+		if (!(player.level() instanceof ServerLevel level) || player.tickCount % FireRules.playerFireDamageInterval() != 0) {
 			return;
 		}
 

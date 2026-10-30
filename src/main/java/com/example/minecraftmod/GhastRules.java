@@ -46,7 +46,8 @@ public final class GhastRules {
 	}
 
 	public static boolean canSeeTarget(Ghast ghast, ServerPlayer player) {
-		if (!isValidTarget(player) || ghast.level() != player.level() || ghast.distanceToSqr(player) > OVERWORLD_TARGET_RADIUS * OVERWORLD_TARGET_RADIUS) {
+		double targetRadius = DifficultyScalingRules.more(OVERWORLD_TARGET_RADIUS);
+		if (!isValidTarget(player) || ghast.level() != player.level() || ghast.distanceToSqr(player) > targetRadius * targetRadius) {
 			return false;
 		}
 
@@ -61,7 +62,7 @@ public final class GhastRules {
 		}
 
 		retargetOverworldGhasts(level);
-		if (level.getGameTime() % OVERWORLD_SPAWN_INTERVAL_TICKS == 0L) {
+		if (level.getGameTime() % DifficultyScalingRules.sooner(OVERWORLD_SPAWN_INTERVAL_TICKS) == 0L) {
 			spawnAroundPlayers(level);
 		}
 	}
@@ -73,7 +74,7 @@ public final class GhastRules {
 				continue;
 			}
 
-			AABB area = player.getBoundingBox().inflate(OVERWORLD_TARGET_RADIUS);
+			AABB area = player.getBoundingBox().inflate(DifficultyScalingRules.more(OVERWORLD_TARGET_RADIUS));
 			for (Ghast ghast : level.getEntities(EntityType.GHAST, area, ghast -> ghast.isAlive())) {
 				if (!processedGhasts.add(ghast.getUUID())) {
 					continue;
@@ -84,7 +85,7 @@ public final class GhastRules {
 					continue;
 				}
 
-				ServerPlayer target = nearestVisiblePlayer(level, ghast, OVERWORLD_TARGET_RADIUS);
+			ServerPlayer target = nearestVisiblePlayer(level, ghast, (int)DifficultyScalingRules.more(OVERWORLD_TARGET_RADIUS));
 				if (target != null) {
 					ghast.setTarget(target);
 				} else {
@@ -96,7 +97,7 @@ public final class GhastRules {
 
 	private static void spawnAroundPlayers(ServerLevel level) {
 		for (ServerPlayer player : level.players()) {
-			if (!isValidTarget(player) || NoMobCommands.isNoMobEnabled(player) || nearbyGhastCount(level, player) >= MAX_GHASTS_NEAR_PLAYER) {
+			if (!isValidTarget(player) || NoMobCommands.isNoMobEnabled(player) || nearbyGhastCount(level, player) >= DifficultyScalingRules.more(MAX_GHASTS_NEAR_PLAYER)) {
 				continue;
 			}
 
@@ -112,8 +113,9 @@ public final class GhastRules {
 
 	private static Ghast createGhastNear(ServerLevel level, ServerPlayer player) {
 		for (int attempt = 0; attempt < SPAWN_ATTEMPTS; attempt++) {
-			int x = player.getBlockX() + level.getRandom().nextInt(OVERWORLD_SPAWN_RADIUS * 2 + 1) - OVERWORLD_SPAWN_RADIUS;
-			int z = player.getBlockZ() + level.getRandom().nextInt(OVERWORLD_SPAWN_RADIUS * 2 + 1) - OVERWORLD_SPAWN_RADIUS;
+			int spawnRadius = (int)DifficultyScalingRules.more(OVERWORLD_SPAWN_RADIUS);
+			int x = player.getBlockX() + level.getRandom().nextInt(spawnRadius * 2 + 1) - spawnRadius;
+			int z = player.getBlockZ() + level.getRandom().nextInt(spawnRadius * 2 + 1) - spawnRadius;
 			int y = Math.min(level.getMaxY() - 8, player.getBlockY() + 18 + level.getRandom().nextInt(18));
 			BlockPos pos = new BlockPos(x, y, z);
 			if (!level.isLoaded(pos) || !level.isEmptyBlock(pos) || !level.isEmptyBlock(pos.above())) {
@@ -135,7 +137,7 @@ public final class GhastRules {
 	}
 
 	private static int nearbyGhastCount(ServerLevel level, ServerPlayer player) {
-		AABB area = player.getBoundingBox().inflate(OVERWORLD_SPAWN_RADIUS);
+			AABB area = player.getBoundingBox().inflate(DifficultyScalingRules.more(OVERWORLD_SPAWN_RADIUS));
 		List<Ghast> ghasts = level.getEntities(EntityType.GHAST, area, ghast -> ghast.isAlive());
 		return ghasts.size();
 	}

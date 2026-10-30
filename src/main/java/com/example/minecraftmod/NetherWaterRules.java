@@ -64,7 +64,7 @@ public final class NetherWaterRules {
 		BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 		int baseX = chunk.getPos().getMinBlockX();
 		int baseZ = chunk.getPos().getMinBlockZ();
-		int remainingReplacements = 512;
+		int remainingReplacements = DifficultyScalingRules.more(512);
 
 		for (int sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
 			LevelChunkSection section = sections[sectionIndex];

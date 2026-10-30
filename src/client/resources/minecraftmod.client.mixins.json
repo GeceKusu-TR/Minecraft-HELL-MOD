@@ -6,6 +6,8 @@
 		"TitleScreenMixin",
 		"OxygenEffectSpriteMixin",
 		"PeacefulFoodHudMixin",
+		"HardModeHudMixin",
+		"HardModeDebugOverlayMixin",
 		"AtmosphericFogMixin",
 		"BookViewScreenMixin",
 		"EndLoadingGuiMixin"

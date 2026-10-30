@@ -49,8 +49,8 @@ public final class LeatherHelmetRules {
 			}
 
 			removeForbiddenEnchantments(armor, player.level().registryAccess());
-			if (player.tickCount % PASSIVE_DAMAGE_INTERVAL_TICKS == 0 && player.level() instanceof ServerLevel level) {
-				armor.hurtAndBreak(1, level, player, item -> player.onEquippedItemBroken(item, slot));
+			if (player.tickCount % DifficultyScalingRules.sooner(PASSIVE_DAMAGE_INTERVAL_TICKS) == 0 && player.level() instanceof ServerLevel level) {
+				armor.hurtAndBreak(DifficultyScalingRules.more(1), level, player, item -> player.onEquippedItemBroken(item, slot));
 			}
 		}
 	}

@@ -28,7 +28,7 @@ public final class TaxRules {
 
 	public static int escalatingDamage(int exposureSeconds) {
 		int shift = Math.max(0, Math.min(exposureSeconds, 6));
-		return Math.min(MAX_TOXIC_WATER_DAMAGE, FIRST_TOXIC_WATER_DAMAGE << shift);
+		return Math.min(DifficultyScalingRules.more(MAX_TOXIC_WATER_DAMAGE), DifficultyScalingRules.more(FIRST_TOXIC_WATER_DAMAGE << shift));
 	}
 
 	public static void damageEquipmentAndInventory(ServerPlayer player, int mainDamage) {
@@ -50,7 +50,7 @@ public final class TaxRules {
 
 	private static void damageHelmet(ServerLevel level, ServerPlayer player, int mainDamage) {
 		ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
-		int damage = helmet.is(Items.LEATHER_HELMET) ? LEATHER_HELMET_TOXIC_WATER_DAMAGE : mainDamage;
+		int damage = helmet.is(Items.LEATHER_HELMET) ? DifficultyScalingRules.more(LEATHER_HELMET_TOXIC_WATER_DAMAGE) : mainDamage;
 		damageStack(level, player, helmet, damage, EquipmentSlot.HEAD);
 	}
 
@@ -68,8 +68,8 @@ public final class TaxRules {
 
 	private static void damageInventory(NonNullList<ItemStack> stacks, boolean protectedByLeatherHelmet) {
 		int inventoryDamage = protectedByLeatherHelmet
-			? Math.max(1, (int)Math.ceil(INVENTORY_ITEM_DAMAGE * LEATHER_HELMET_INVENTORY_DAMAGE_MULTIPLIER))
-			: INVENTORY_ITEM_DAMAGE;
+			? Math.max(1, (int)Math.ceil(DifficultyScalingRules.more(INVENTORY_ITEM_DAMAGE * LEATHER_HELMET_INVENTORY_DAMAGE_MULTIPLIER)))
+			: DifficultyScalingRules.more(INVENTORY_ITEM_DAMAGE);
 
 		for (ItemStack stack : stacks) {
 			if (stack.isEmpty() || !stack.isDamageableItem() || GrassCurseRules.isCursedGrass(stack)) {

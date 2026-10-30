@@ -71,6 +71,10 @@ public final class FishingRules {
 		return isUnluckyFishingRod(level, player.getMainHandItem()) || isUnluckyFishingRod(level, player.getOffhandItem());
 	}
 
+	public static int fastFishingWaitTicks() {
+		return DifficultyScalingRules.sooner(FAST_FISHING_WAIT_TICKS);
+	}
+
 	public static ObjectArrayList<ItemStack> worstFishingLoot(RandomSource random) {
 		ObjectArrayList<ItemStack> loot = new ObjectArrayList<>();
 		if (random.nextInt(10_000) == 0) {
@@ -109,7 +113,7 @@ public final class FishingRules {
 		ItemStack tridentStack = new ItemStack(Items.TRIDENT);
 		ThrownTrident trident = new ThrownTrident(level, origin.x, origin.y, origin.z, tridentStack);
 		trident.pickup = AbstractArrow.Pickup.DISALLOWED;
-		trident.setBaseDamage(FISHING_TRIDENT_DAMAGE);
+		trident.setBaseDamage(DifficultyScalingRules.more(FISHING_TRIDENT_DAMAGE));
 		trident.setNoGravity(true);
 		homeFishingTrident(trident, player);
 		FISHING_TRIDENT_TARGETS.put(trident.getUUID(), player.getUUID());
@@ -143,7 +147,7 @@ public final class FishingRules {
 	public static boolean hurtWithFishingTrident(Entity trident, Entity hitEntity, DamageSource damageSource, float amount) {
 		if (isFishingTrident(trident)) {
 			FISHING_TRIDENT_TARGETS.remove(trident.getUUID());
-			return hurtOnServer(hitEntity, damageSource, FISHING_TRIDENT_DAMAGE);
+			return hurtOnServer(hitEntity, damageSource, DifficultyScalingRules.more(FISHING_TRIDENT_DAMAGE));
 		}
 
 		return hurtOnServer(hitEntity, damageSource, amount);
@@ -156,7 +160,7 @@ public final class FishingRules {
 			return;
 		}
 
-		trident.setDeltaMovement(toTarget.scale(FISHING_TRIDENT_SPEED / distance));
+		trident.setDeltaMovement(toTarget.scale(DifficultyScalingRules.more(FISHING_TRIDENT_SPEED) / distance));
 	}
 
 	private static ItemStack damagedLeatherBoots(RandomSource random) {

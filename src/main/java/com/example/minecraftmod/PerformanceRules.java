@@ -54,7 +54,7 @@ public final class PerformanceRules {
 			return true;
 		}
 
-		return countEndermen(level) < MAX_END_ENDERMEN;
+		return countEndermen(level) < DifficultyScalingRules.more(MAX_END_ENDERMEN);
 	}
 
 	public static boolean canAddEntityToLevel(ServerLevel level, Entity entity) {
@@ -62,7 +62,7 @@ public final class PerformanceRules {
 			return true;
 		}
 
-		if (countEndermen(level) < MAX_END_ENDERMEN) {
+		if (countEndermen(level) < DifficultyScalingRules.more(MAX_END_ENDERMEN)) {
 			return true;
 		}
 
@@ -71,7 +71,7 @@ public final class PerformanceRules {
 	}
 
 	public static void enforceEndEndermanLimit(ServerLevel level) {
-		if (level.dimension() != Level.END || !shouldRunEveryTicks(level, "end_Enderman_limit", 20)) {
+		if (level.dimension() != Level.END || !shouldRunEveryTicks(level, "end_Enderman_limit", DifficultyScalingRules.sooner(20))) {
 			return;
 		}
 
@@ -82,7 +82,7 @@ public final class PerformanceRules {
 			}
 
 			count++;
-			if (count > MAX_END_ENDERMEN) {
+			if (count > DifficultyScalingRules.more(MAX_END_ENDERMEN)) {
 				entity.discard();
 			}
 		}
@@ -93,7 +93,7 @@ public final class PerformanceRules {
 		for (Entity entity : level.getAllEntities()) {
 			if (entity instanceof EnderMan && entity.isAlive()) {
 				count++;
-				if (count >= MAX_END_ENDERMEN) {
+				if (count >= DifficultyScalingRules.more(MAX_END_ENDERMEN)) {
 					return count;
 				}
 			}

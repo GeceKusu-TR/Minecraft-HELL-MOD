@@ -28,12 +28,17 @@ public final class FireRules {
 	}
 
 	public static int fireTicksFor(Level level) {
-		return switch (level.getDifficulty()) {
+		int baseTicks = switch (level.getDifficulty()) {
 			case EASY -> EASY_FIRE_TICKS;
 			case NORMAL -> NORMAL_FIRE_TICKS;
 			case HARD -> HARD_FIRE_TICKS;
 			case PEACEFUL -> Integer.MAX_VALUE;
 		};
+		return baseTicks == Integer.MAX_VALUE ? baseTicks : DifficultyScalingRules.more(baseTicks);
+	}
+
+	public static int playerFireDamageInterval() {
+		return DifficultyScalingRules.sooner(PLAYER_FIRE_DAMAGE_INTERVAL);
 	}
 
 	public static boolean shouldBurnForever(Entity entity) {
@@ -45,6 +50,6 @@ public final class FireRules {
 	}
 
 	public static void hurtBurningPlayer(ServerLevel level, ServerPlayer player) {
-		player.hurtServer(level, player.damageSources().onFire(), PLAYER_FIRE_DAMAGE);
+		player.hurtServer(level, player.damageSources().onFire(), DifficultyScalingRules.more(PLAYER_FIRE_DAMAGE));
 	}
 }

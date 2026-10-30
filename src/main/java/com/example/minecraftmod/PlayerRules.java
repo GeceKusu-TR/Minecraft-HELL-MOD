@@ -106,7 +106,7 @@ public final class PlayerRules {
 			return Math.max(previousDamageStep, currentDamageStep);
 		}
 
-		player.hurtServer(level, player.damageSources().fall(), AIR_FALL_DAMAGE_PER_STEP);
+		player.hurtServer(level, player.damageSources().fall(), DifficultyScalingRules.more(AIR_FALL_DAMAGE_PER_STEP));
 		return previousDamageStep + 1;
 	}
 

@@ -1,6 +1,9 @@
 package com.example.minecraftmod;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
 
 import org.slf4j.Logger;
@@ -16,6 +19,12 @@ public class MinecraftMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		PayloadTypeRegistry.playS2C().register(CompletionHudPayload.TYPE, CompletionHudPayload.CODEC);
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			boolean completed = EndCompletionRules.isCompleted(handler.player);
+			boolean hardcoreEscalated = EndCompletionRules.isHardcoreEscalated(handler.player);
+			ServerPlayNetworking.send(handler.player, new CompletionHudPayload(completed, hardcoreEscalated));
+		});
 		OxygenEffects.bootstrap();
 		LOGGER.info("Minecraft Mod baslatildi.");
 	}

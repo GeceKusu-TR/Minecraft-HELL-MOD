@@ -68,8 +68,8 @@ public abstract class FishingHookLootMixin {
 		if (this.timeUntilHooked > 1) {
 			this.timeUntilHooked = 1;
 		}
-		if (this.timeUntilHooked <= 0 && this.timeUntilLured > FishingRules.FAST_FISHING_WAIT_TICKS) {
-			this.timeUntilLured = FishingRules.FAST_FISHING_WAIT_TICKS;
+		if (this.timeUntilHooked <= 0 && this.timeUntilLured > FishingRules.fastFishingWaitTicks()) {
+			this.timeUntilLured = FishingRules.fastFishingWaitTicks();
 		}
 	}
 }

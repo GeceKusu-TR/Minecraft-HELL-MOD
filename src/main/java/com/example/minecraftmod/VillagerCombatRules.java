@@ -51,7 +51,7 @@ public final class VillagerCombatRules {
 	}
 
 	public static Player findVisiblePlayer(ServerLevel serverLevel, Villager villager) {
-		Player player = serverLevel.getNearestPlayer(villager, VISIBLE_PLAYER_RANGE);
+		Player player = serverLevel.getNearestPlayer(villager, DifficultyScalingRules.more(VISIBLE_PLAYER_RANGE));
 		if (player == null || !villager.hasLineOfSight(player)) {
 			return null;
 		}
@@ -69,7 +69,7 @@ public final class VillagerCombatRules {
 			targetPosition.x - origin.x,
 			targetPosition.y - origin.y,
 			targetPosition.z - origin.z,
-			TRIDENT_SPEED,
+			(float)DifficultyScalingRules.more(TRIDENT_SPEED),
 			TRIDENT_INACCURACY
 		);
 		serverLevel.addFreshEntity(trident);
@@ -88,11 +88,12 @@ public final class VillagerCombatRules {
 	}
 
 	public static List<Villager> findWitnesses(ServerLevel serverLevel, Villager victim, Player killer) {
-		AABB searchBox = victim.getBoundingBox().inflate(WITNESS_RANGE);
+		double witnessRange = DifficultyScalingRules.more(WITNESS_RANGE);
+		AABB searchBox = victim.getBoundingBox().inflate(witnessRange);
 		return serverLevel.getEntitiesOfClass(Villager.class, searchBox, witness ->
 			witness != victim
 				&& witness.hasLineOfSight(killer)
-				&& witness.distanceToSqr(killer) <= WITNESS_RANGE * WITNESS_RANGE
+				&& witness.distanceToSqr(killer) <= witnessRange * witnessRange
 		);
 	}
 }

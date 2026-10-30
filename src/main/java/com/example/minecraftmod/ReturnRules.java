@@ -132,7 +132,7 @@ public final class ReturnRules {
 		}
 
 		ensureReturnStickHealth(stack);
-		int damage = returnStickDamageFor(level, pulledPos, pulledState);
+		int damage = DifficultyScalingRules.more(returnStickDamageFor(level, pulledPos, pulledState));
 		int currentDamage = stack.getOrDefault(DataComponents.DAMAGE, 0);
 		int nextDamage = currentDamage + damage;
 		if (nextDamage >= RETURN_STICK_MAX_HEALTH) {

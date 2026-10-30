@@ -19,7 +19,7 @@ public abstract class SkeletonRangedBowGoalMixin {
 	@Inject(method = "<init>(Lnet/minecraft/world/entity/monster/Monster;DIF)V", at = @At("RETURN"))
 	private void minecraftmod$extendSkeletonRange(Monster mob, double speedModifier, int attackIntervalMin, float attackRadius, CallbackInfo ci) {
 		if (this.mob instanceof AbstractSkeleton) {
-			attackRadiusSqr = 50.0F * 50.0F;
+			attackRadiusSqr = 36.0F * 36.0F;
 		}
 	}
 }

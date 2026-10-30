@@ -40,7 +40,7 @@ public final class WitherRules {
 
 	public static double maxHealth(double original) {
 		if (original == BASE_MAX_HEALTH) {
-			return MODDED_MAX_HEALTH;
+			return DifficultyScalingRules.more(MODDED_MAX_HEALTH);
 		}
 
 		return original;
@@ -48,7 +48,7 @@ public final class WitherRules {
 
 	public static int attackInterval(int original) {
 		if (original == VANILLA_ATTACK_INTERVAL) {
-			return MODDED_ATTACK_INTERVAL;
+			return DifficultyScalingRules.sooner(MODDED_ATTACK_INTERVAL);
 		}
 
 		return original;
@@ -68,16 +68,18 @@ public final class WitherRules {
 	}
 
 	public static void tickPhaseThree(ServerLevel level, WitherBoss wither) {
-		if (phase(wither) != Phase.PHASE_3 || wither.tickCount % PHASE_THREE_ENDERMITE_INTERVAL_TICKS != 0) {
+		if (phase(wither) != Phase.PHASE_3 || wither.tickCount % DifficultyScalingRules.sooner(PHASE_THREE_ENDERMITE_INTERVAL_TICKS) != 0) {
 			return;
 		}
 
-		AABB limitArea = wither.getBoundingBox().inflate(PHASE_THREE_ENDERMITE_LIMIT_RADIUS);
-		if (!PerformanceRules.isBelowEntityLimit(level, Endermite.class, limitArea, PHASE_THREE_ENDERMITE_LIMIT)) {
+		double limitRadius = DifficultyScalingRules.more(PHASE_THREE_ENDERMITE_LIMIT_RADIUS);
+		int entityLimit = DifficultyScalingRules.more(PHASE_THREE_ENDERMITE_LIMIT);
+		AABB limitArea = wither.getBoundingBox().inflate(limitRadius);
+		if (!PerformanceRules.isBelowEntityLimit(level, Endermite.class, limitArea, entityLimit)) {
 			return;
 		}
 
-		for (int i = 0; i < PHASE_THREE_ENDERMITE_COUNT; i++) {
+		for (int i = 0; i < DifficultyScalingRules.more(PHASE_THREE_ENDERMITE_COUNT); i++) {
 			Entity endermite = EntityType.ENDERMITE.create(level, EntitySpawnReason.MOB_SUMMONED);
 			if (endermite == null) {
 				continue;
@@ -91,7 +93,7 @@ public final class WitherRules {
 			BlockPos spawnPos = BlockPos.containing(wither.position().add(offset));
 			endermite.setPos(spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D);
 			level.addFreshEntity(endermite);
-			if (!PerformanceRules.isBelowEntityLimit(level, Endermite.class, limitArea, PHASE_THREE_ENDERMITE_LIMIT)) {
+			if (!PerformanceRules.isBelowEntityLimit(level, Endermite.class, limitArea, entityLimit)) {
 				return;
 			}
 		}
@@ -104,7 +106,7 @@ public final class WitherRules {
 
 		return new MobEffectInstance(
 			MobEffects.WITHER,
-			effect.isInfiniteDuration() ? effect.getDuration() : Math.max(effect.getDuration(), WITHER_EFFECT_DURATION_TICKS),
+			 effect.isInfiniteDuration() ? effect.getDuration() : Math.max(effect.getDuration(), DifficultyScalingRules.more(WITHER_EFFECT_DURATION_TICKS)),
 			Math.max(effect.getAmplifier(), 2),
 			effect.isAmbient(),
 			effect.isVisible(),
@@ -113,7 +115,7 @@ public final class WitherRules {
 	}
 
 	public static void applyExtraWitherEffectDamage(ServerLevel level, LivingEntity entity, int amplifier) {
-		float extraDamage = 1.0F + amplifier;
+		float extraDamage = DifficultyScalingRules.more(1.0F + amplifier);
 		entity.hurtServer(level, entity.damageSources().wither(), extraDamage);
 	}
 
@@ -127,7 +129,7 @@ public final class WitherRules {
 			return;
 		}
 
-		shield.hurtAndBreak(WITHER_SHIELD_DAMAGE, player, player.getUsedItemHand());
+		shield.hurtAndBreak(DifficultyScalingRules.more(WITHER_SHIELD_DAMAGE), player, player.getUsedItemHand());
 	}
 
 	public static void dropSpeedrunTaxLoot(WitherBoss wither, ServerLevel level) {

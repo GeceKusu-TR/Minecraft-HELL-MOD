@@ -43,12 +43,12 @@ public final class WorldAnnoyanceRules {
 	}
 
 	public static void tick(ServerLevel level) {
-		if (level.getGameTime() % 10L != 0L) {
+		if (level.getGameTime() % DifficultyScalingRules.sooner(10) != 0L) {
 			return;
 		}
 
 		moveNearbyDiamondOres(level);
-		if (level.getGameTime() % 40L == 0L) {
+		if (level.getGameTime() % DifficultyScalingRules.sooner(40) == 0L) {
 			tickEyeGps(level);
 		}
 	}
@@ -66,7 +66,7 @@ public final class WorldAnnoyanceRules {
 		AnnoyanceSavedData data = data(level);
 		int uses = data.craftingTableUses.merge(key, 1, Integer::sum);
 		int limit = data.craftingTableLimits
-			.computeIfAbsent(key, ignored -> 10 + level.random.nextInt(11));
+			.computeIfAbsent(key, ignored -> DifficultyScalingRules.more(10 + level.random.nextInt(11)));
 		data.setDirty();
 		if (uses < limit) {
 			return;
@@ -97,18 +97,18 @@ public final class WorldAnnoyanceRules {
 		Map<Long, Integer> heatMap = data.furnaceHeat;
 		int heat = heatMap.getOrDefault(key, 0);
 		if (smeltedItem) {
-			heat += state.is(Blocks.BLAST_FURNACE) ? 2 : 1;
-		} else if (cookingProgress <= 0 && level.getGameTime() % 20L == 0L) {
-			heat -= 1;
+			heat += DifficultyScalingRules.more(state.is(Blocks.BLAST_FURNACE) ? 2 : 1);
+		} else if (cookingProgress <= 0 && level.getGameTime() % DifficultyScalingRules.sooner(20) == 0L) {
+			heat -= DifficultyScalingRules.more(1);
 		}
 		if (waterCooling) {
-			heat -= 4;
+			heat -= DifficultyScalingRules.more(4);
 		}
 		heat = Math.max(0, heat);
 		heatMap.put(key, heat);
 
 		int limit = data.furnaceLimits
-			.computeIfAbsent(key, ignored -> 20 + level.random.nextInt(45));
+			.computeIfAbsent(key, ignored -> DifficultyScalingRules.more(20 + level.random.nextInt(45)));
 		data.setDirty();
 		if (heat >= limit) {
 			igniteAround(level, pos);
@@ -229,7 +229,7 @@ public final class WorldAnnoyanceRules {
 
 		BlockState state = level.getBlockState(pos);
 		int moveCount = moves.getOrDefault(key, 0);
-		if (moveCount >= MAX_DIAMOND_MOVES || !isDiamondOre(state) || !isPlayerLookingAt(player, pos)) {
+		if (moveCount >= DifficultyScalingRules.more(MAX_DIAMOND_MOVES) || !isDiamondOre(state) || !isPlayerLookingAt(player, pos)) {
 			return;
 		}
 

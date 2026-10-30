@@ -1,5 +1,6 @@
 package com.example.minecraftmod.mixin;
 
+import com.example.minecraftmod.DifficultyScalingRules;
 import com.example.minecraftmod.OxygenRules;
 import com.example.minecraftmod.OxygenEffects;
 import com.example.minecraftmod.OxygenDamageTypes;
@@ -20,9 +21,6 @@ public abstract class ServerPlayerOxygenMixin {
 
 	@Unique
 	private OxygenRules.OxygenStage minecraftmod$currentOxygenStage = OxygenRules.OxygenStage.NONE;
-
-	@Unique
-	private boolean minecraftmod$wasBreathingButtonPressed;
 
 	@Inject(method = "die", at = @At("HEAD"))
 	private void minecraftmod$clearOxygenTitlesOnDeath(DamageSource damageSource, CallbackInfo ci) {
@@ -62,7 +60,7 @@ public abstract class ServerPlayerOxygenMixin {
 			minecraftmod$currentOxygenStage = oxygenStage;
 			minecraftmod$oxygenDamageTicks++;
 
-			if (minecraftmod$oxygenDamageTicks >= OxygenRules.DAMAGE_INTERVAL) {
+			if (minecraftmod$oxygenDamageTicks >= OxygenRules.damageInterval()) {
 				float damage = OxygenRules.oxygenDeprivationDamage(player);
 				if (damage > 0.0F) {
 					player.hurtServer((ServerLevel)player.level(), OxygenDamageTypes.oxygenDeprivation(player.level()), damage);
@@ -81,7 +79,6 @@ public abstract class ServerPlayerOxygenMixin {
 	private void minecraftmod$clearOxygenState(ServerPlayer player) {
 		minecraftmod$clearAltitudeOxygenState(player);
 		OxygenRules.clearPeacefulHealthCap(player);
-		OxygenRules.clearTurtleShellHealthBoost(player);
 	}
 
 	@Unique
@@ -94,12 +91,7 @@ public abstract class ServerPlayerOxygenMixin {
 
 	@Unique
 	private void minecraftmod$tickUnderwaterBreathing(ServerPlayer player) {
-		boolean breathingButtonPressed = OxygenRules.isBreathingButtonPressed(player);
-		boolean breathingButtonJustPressed = breathingButtonPressed && !minecraftmod$wasBreathingButtonPressed;
-		minecraftmod$wasBreathingButtonPressed = breathingButtonPressed;
-
 		if (OxygenRules.isPeaceful(player)) {
-			OxygenRules.clearTurtleShellHealthBoost(player);
 			OxygenRules.applyPeacefulHealthCap(player);
 			OxygenRules.applyPeacefulFoodCap(player);
 			return;
@@ -108,23 +100,6 @@ public abstract class ServerPlayerOxygenMixin {
 		OxygenRules.clearPeacefulHealthCap(player);
 
 		if (!OxygenRules.isUnderwater(player)) {
-			OxygenRules.clearTurtleShellHealthBoost(player);
-			return;
-		}
-
-		if (OxygenRules.hasLeatherHelmet(player)) {
-			OxygenRules.clearTurtleShellHealthBoost(player);
-			return;
-		}
-
-		if (OxygenRules.hasTurtleShellHelmet(player)) {
-			OxygenRules.applyTurtleShellHealthBoost(player);
-		} else {
-			OxygenRules.clearTurtleShellHealthBoost(player);
-		}
-
-		if (breathingButtonJustPressed) {
-			player.setAirSupply(20);
 			return;
 		}
 
@@ -132,8 +107,8 @@ public abstract class ServerPlayerOxygenMixin {
 			return;
 		}
 
-		if (player.tickCount % OxygenRules.DAMAGE_INTERVAL == 0) {
-			player.hurtServer((ServerLevel)player.level(), player.damageSources().drown(), 1.0F);
+		if (player.tickCount % OxygenRules.damageInterval() == 0) {
+			player.hurtServer((ServerLevel)player.level(), player.damageSources().drown(), DifficultyScalingRules.more(1.0F));
 		}
 	}
 }

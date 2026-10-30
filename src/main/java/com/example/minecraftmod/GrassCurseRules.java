@@ -205,7 +205,7 @@ public final class GrassCurseRules {
 
 	private static void ensureCursed(ItemStack stack) {
 		if (!isCursedGrass(stack)) {
-			setRemainingTicks(stack, TOTAL_TICKS);
+			setRemainingTicks(stack, DifficultyScalingRules.sooner(TOTAL_TICKS));
 			return;
 		}
 
@@ -215,9 +215,9 @@ public final class GrassCurseRules {
 	private static int remainingTicks(ItemStack stack) {
 		CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
 		if (customData == null) {
-			return TOTAL_TICKS;
+			return DifficultyScalingRules.sooner(TOTAL_TICKS);
 		}
-		return customData.copyTag().getIntOr(REMAINING_TICKS_KEY, TOTAL_TICKS);
+		return customData.copyTag().getIntOr(REMAINING_TICKS_KEY, DifficultyScalingRules.sooner(TOTAL_TICKS));
 	}
 
 	private static void setRemainingTicks(ItemStack stack, int remainingTicks) {
@@ -229,11 +229,12 @@ public final class GrassCurseRules {
 	}
 
 	private static void updateVisuals(ItemStack stack, int remainingTicks) {
-		int clampedTicks = Math.max(0, Math.min(TOTAL_TICKS, remainingTicks));
+		int totalTicks = DifficultyScalingRules.sooner(TOTAL_TICKS);
+		int clampedTicks = Math.max(0, Math.min(totalTicks, remainingTicks));
 		int remainingSeconds = (clampedTicks + 19) / 20;
 		stack.set(DataComponents.MAX_STACK_SIZE, 1);
-		stack.set(DataComponents.MAX_DAMAGE, TOTAL_TICKS);
-		stack.set(DataComponents.DAMAGE, TOTAL_TICKS - clampedTicks);
+		stack.set(DataComponents.MAX_DAMAGE, totalTicks);
+		stack.set(DataComponents.DAMAGE, totalTicks - clampedTicks);
 		stack.set(DataComponents.CUSTOM_NAME, Component.literal(Integer.toString(remainingSeconds)));
 	}
 
@@ -255,19 +256,22 @@ public final class GrassCurseRules {
 
 		if (session.age == 0) {
 			player.sendSystemMessage(localizedLanMessage(player, session.port));
-		} else if (session.age == MESSAGE_INTERVAL_TICKS) {
+		} else if (session.age == DifficultyScalingRules.sooner(MESSAGE_INTERVAL_TICKS)) {
 			player.sendSystemMessage(Component.literal(localizedJoinMessage(player)).withStyle(ChatFormatting.YELLOW));
 			addFakePlayerToTab(player);
 		}
 
-		int teleportAge = session.age - TELEPORT_START_TICKS;
-		if (teleportAge >= 0 && teleportAge < TELEPORT_DURATION_TICKS && teleportAge % TELEPORT_INTERVAL_TICKS == 0) {
+		int teleportStart = DifficultyScalingRules.sooner(TELEPORT_START_TICKS);
+		int teleportInterval = DifficultyScalingRules.sooner(TELEPORT_INTERVAL_TICKS);
+		int teleportDuration = DifficultyScalingRules.more(TELEPORT_DURATION_TICKS);
+		int teleportAge = session.age - teleportStart;
+		if (teleportAge >= 0 && teleportAge < teleportDuration && teleportAge % teleportInterval == 0) {
 			teleportRandomly(player, level);
 		}
 
 		session.age++;
 		saveAftermathTag(player, session);
-		if (session.age > TELEPORT_START_TICKS + TELEPORT_DURATION_TICKS) {
+		if (session.age > teleportStart + teleportDuration) {
 			AFTERMATH_SESSIONS.remove(player.getUUID());
 			clearAftermathTags(player);
 			removeFakePlayerFromTab(player);
@@ -380,9 +384,10 @@ public final class GrassCurseRules {
 	private static void teleportRandomly(ServerPlayer player, ServerLevel level) {
 		RandomSource random = player.getRandom();
 		BlockPos origin = player.blockPosition();
-		for (int attempt = 0; attempt < TELEPORT_ATTEMPTS; attempt++) {
-			int x = origin.getX() + random.nextInt(TELEPORT_RANGE * 2 + 1) - TELEPORT_RANGE;
-			int z = origin.getZ() + random.nextInt(TELEPORT_RANGE * 2 + 1) - TELEPORT_RANGE;
+		int range = (int)DifficultyScalingRules.more(TELEPORT_RANGE);
+		for (int attempt = 0; attempt < DifficultyScalingRules.more(TELEPORT_ATTEMPTS); attempt++) {
+			int x = origin.getX() + random.nextInt(range * 2 + 1) - range;
+			int z = origin.getZ() + random.nextInt(range * 2 + 1) - range;
 			if (!level.hasChunk(x >> 4, z >> 4)) {
 				continue;
 			}

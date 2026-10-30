@@ -46,7 +46,7 @@ public final class EndermanRules {
 				return;
 			}
 
-			if (Enderman.tickCount - lastPickupTick >= BLOCK_HOLD_TICKS) {
+			if (Enderman.tickCount - lastPickupTick >= DifficultyScalingRules.sooner(BLOCK_HOLD_TICKS)) {
 				Enderman.setCarriedBlock(null);
 				LAST_PICKUP_TICKS.remove(Enderman);
 			}
@@ -54,7 +54,7 @@ public final class EndermanRules {
 			return;
 		}
 
-		BlockPos target = findNearbyBlock(level, Enderman.blockPosition(), PICKUP_RADIUS);
+		BlockPos target = findNearbyBlock(level, Enderman.blockPosition(), (int)DifficultyScalingRules.more(PICKUP_RADIUS));
 		if (target == null) {
 			wanderNearby(level, Enderman);
 			return;
@@ -168,7 +168,7 @@ public final class EndermanRules {
 
 	private static void wanderNearby(ServerLevel level, EnderMan Enderman) {
 		Integer lastWanderTick = LAST_WANDER_TICKS.get(Enderman);
-		if (lastWanderTick != null && Enderman.tickCount - lastWanderTick < WANDER_COOLDOWN_TICKS) {
+		if (lastWanderTick != null && Enderman.tickCount - lastWanderTick < DifficultyScalingRules.sooner(WANDER_COOLDOWN_TICKS)) {
 			return;
 		}
 
@@ -178,7 +178,7 @@ public final class EndermanRules {
 			return;
 		}
 
-		Enderman.getNavigation().moveTo(destination.getX() + 0.5D, destination.getY(), destination.getZ() + 0.5D, WANDER_SPEED);
+		Enderman.getNavigation().moveTo(destination.getX() + 0.5D, destination.getY(), destination.getZ() + 0.5D, DifficultyScalingRules.more(WANDER_SPEED));
 		LAST_WANDER_TICKS.put(Enderman, Enderman.tickCount);
 	}
 
@@ -199,7 +199,7 @@ public final class EndermanRules {
 
 	private static void teleportToSafeSpot(ServerLevel level, EnderMan Enderman) {
 		Integer lastTeleportTick = LAST_TELEPORT_TICKS.get(Enderman);
-		if (lastTeleportTick != null && Enderman.tickCount - lastTeleportTick < TELEPORT_COOLDOWN_TICKS) {
+		if (lastTeleportTick != null && Enderman.tickCount - lastTeleportTick < DifficultyScalingRules.sooner(TELEPORT_COOLDOWN_TICKS)) {
 			return;
 		}
 
@@ -215,9 +215,10 @@ public final class EndermanRules {
 
 	private static BlockPos findTeleportDestination(ServerLevel level, EnderMan Enderman) {
 		BlockPos origin = Enderman.blockPosition();
-		for (int attempt = 0; attempt < 20; attempt++) {
-			int x = origin.getX() + Enderman.getRandom().nextInt(65) - 32;
-			int z = origin.getZ() + Enderman.getRandom().nextInt(65) - 32;
+		int range = (int)DifficultyScalingRules.more(32);
+		for (int attempt = 0; attempt < DifficultyScalingRules.more(20); attempt++) {
+			int x = origin.getX() + Enderman.getRandom().nextInt(range * 2 + 1) - range;
+			int z = origin.getZ() + Enderman.getRandom().nextInt(range * 2 + 1) - range;
 			if (!level.hasChunk(x >> 4, z >> 4)) {
 				continue;
 			}

@@ -23,10 +23,6 @@ public abstract class UnderwaterBreathMixin {
 			return minecraftmod$vanillaDrowningDamage(entity);
 		}
 
-		if (OxygenRules.hasLeatherHelmet(player)) {
-			return minecraftmod$vanillaDrowningDamage(entity);
-		}
-
 		return false;
 	}
 

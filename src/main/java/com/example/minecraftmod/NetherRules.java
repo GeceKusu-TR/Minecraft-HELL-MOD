@@ -12,6 +12,6 @@ public final class NetherRules {
 	}
 
 	public static boolean disablesSprintSlowdown(ServerPlayer player) {
-		return player.level().dimension() == Level.NETHER;
+		return player.level().dimension() == Level.NETHER || player.level().dimension() == Level.END;
 	}
 }

@@ -87,7 +87,8 @@ public final class EndPortalRitualRules {
 
 	private static boolean tickSession(ServerLevel level, long key, Session session) {
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(session.owner());
-		if (owner == null || owner.level() != level || owner.distanceToSqr(session.center().getCenter()) > MAX_DISTANCE * MAX_DISTANCE) {
+		double maxDistance = DifficultyScalingRules.more(MAX_DISTANCE);
+		if (owner == null || owner.level() != level || owner.distanceToSqr(session.center().getCenter()) > maxDistance * maxDistance) {
 			if (owner != null) {
 				owner.sendSystemMessage(Component.literal("Ba\u011flant\u0131 kesildi."));
 				EndTermsRules.onDisconnect(owner);
@@ -131,12 +132,15 @@ public final class EndPortalRitualRules {
 		}
 
 		session.setTicks(session.ticks() + 1);
-		if (session.ticks() % 80 == 0) {
+		if (session.ticks() % DifficultyScalingRules.sooner(80) == 0) {
 			spawnWave(level, session.center());
 		}
 
-		if (session.ticks() <= RITUAL_TICKS) {
-			int progress = Math.max(1, Math.min(99, session.ticks() * 99 / RITUAL_TICKS));
+		int ritualTicks = DifficultyScalingRules.more(RITUAL_TICKS);
+		int windowsPauseTicks = DifficultyScalingRules.more(WINDOWS_PAUSE_TICKS);
+		int stillSignalTicks = DifficultyScalingRules.more(STILL_SIGNAL_TICKS);
+		if (session.ticks() <= ritualTicks) {
+			int progress = Math.max(1, Math.min(99, session.ticks() * 99 / ritualTicks));
 			owner.displayClientMessage(Component.literal("End Ge\u00e7idi ba\u015flat\u0131l\u0131yor... %" + progress), true);
 			return false;
 		}
@@ -147,7 +151,7 @@ public final class EndPortalRitualRules {
 		}
 
 		owner.displayClientMessage(Component.literal("End Ge\u00e7idi ba\u015flat\u0131l\u0131yor... %99"), true);
-		if (session.ticks() >= RITUAL_TICKS + WINDOWS_PAUSE_TICKS) {
+		if (session.ticks() >= ritualTicks + windowsPauseTicks) {
 			if (!session.connectingMessageSent()) {
 				owner.sendSystemMessage(Component.literal("Sunucuya ba\u011flan\u0131l\u0131yor..."));
 				session.setConnectingMessageSent(true);
@@ -167,7 +171,7 @@ public final class EndPortalRitualRules {
 				session.setStillTicks(0);
 			}
 
-			if (session.stillTicks() < STILL_SIGNAL_TICKS) {
+			if (session.stillTicks() < stillSignalTicks) {
 				owner.displayClientMessage(Component.literal("Sinyal g\u00fcc\u00fc: " + signalBars(signal)), true);
 				return false;
 			}
@@ -243,7 +247,7 @@ public final class EndPortalRitualRules {
 	}
 
 	private static void spawnWave(ServerLevel level, BlockPos center) {
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < DifficultyScalingRules.more(4); i++) {
 			spawn(level, center, i % 2 == 0 ? EntityType.SILVERFISH : EntityType.ZOMBIE);
 		}
 	}

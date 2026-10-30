@@ -4,10 +4,11 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public final class SpearRules {
-	private static final ThreadLocal<Integer> LUNGE_DEPTH = ThreadLocal.withInitial(() -> 0);
-	private static final ThreadLocal<Player> LUNGE_PLAYER = new ThreadLocal<>();
+	private static final ThreadLocal<Deque<Player>> LUNGE_PLAYERS = ThreadLocal.withInitial(ArrayDeque::new);
 
 	private SpearRules() {
 	}
@@ -17,33 +18,28 @@ public final class SpearRules {
 	}
 
 	public static void beginLunge(Player player) {
-		LUNGE_DEPTH.set(LUNGE_DEPTH.get() + 1);
-		LUNGE_PLAYER.set(player);
+		LUNGE_PLAYERS.get().push(player);
 	}
 
 	public static void endLunge() {
-		int depth = LUNGE_DEPTH.get();
-		if (depth <= 0) {
-			LUNGE_DEPTH.remove();
-			LUNGE_PLAYER.remove();
+		Deque<Player> players = LUNGE_PLAYERS.get();
+		if (players.isEmpty()) {
+			LUNGE_PLAYERS.remove();
 			return;
 		}
 
-		depth--;
-		if (depth <= 0) {
-			LUNGE_DEPTH.remove();
-			LUNGE_PLAYER.remove();
+		players.pop();
+		if (players.isEmpty()) {
+			LUNGE_PLAYERS.remove();
 			return;
 		}
-
-		LUNGE_DEPTH.set(depth);
 	}
 
 	public static boolean isLunging() {
-		return LUNGE_DEPTH.get() > 0;
+		return !LUNGE_PLAYERS.get().isEmpty();
 	}
 
 	public static Player lungePlayer() {
-		return LUNGE_PLAYER.get();
+		return LUNGE_PLAYERS.get().peek();
 	}
 }

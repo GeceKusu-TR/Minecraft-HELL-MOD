@@ -37,7 +37,7 @@ public final class TntRules {
 
 		if (PULLED_TNT.add(tnt)) {
 			pullEndermen(level, tnt);
-			tnt.setFuse(TNT_EXPLOSION_DELAY_TICKS);
+			tnt.setFuse(DifficultyScalingRules.sooner(TNT_EXPLOSION_DELAY_TICKS));
 			return;
 		}
 
@@ -51,11 +51,11 @@ public final class TntRules {
 	}
 
 	private static void pullEndermen(ServerLevel level, PrimedTnt tnt) {
-		AABB area = tnt.getBoundingBox().inflate(ENDERMAN_PULL_RADIUS);
+		AABB area = tnt.getBoundingBox().inflate(DifficultyScalingRules.more(ENDERMAN_PULL_RADIUS));
 		var endermen = level.getEntitiesOfClass(
 			EnderMan.class,
 			area,
-			enderman -> enderman.isAlive() && enderman.distanceToSqr(tnt) <= ENDERMAN_PULL_RADIUS * ENDERMAN_PULL_RADIUS
+			enderman -> enderman.isAlive() && enderman.distanceToSqr(tnt) <= DifficultyScalingRules.more(ENDERMAN_PULL_RADIUS * ENDERMAN_PULL_RADIUS)
 		);
 		int count = Math.max(1, endermen.size());
 		for (int index = 0; index < endermen.size(); index++) {
@@ -132,11 +132,12 @@ public final class TntRules {
 
 	private static void breakNearbyBlocks(ServerLevel level, PrimedTnt tnt) {
 		BlockPos center = tnt.blockPosition();
-		int radiusSquared = TNT_BLOCK_BREAK_RADIUS * TNT_BLOCK_BREAK_RADIUS;
+		int radius = (int)DifficultyScalingRules.more(TNT_BLOCK_BREAK_RADIUS);
+		int radiusSquared = radius * radius;
 		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
-		for (int y = -TNT_BLOCK_BREAK_RADIUS; y <= TNT_BLOCK_BREAK_RADIUS; y++) {
-			for (int x = -TNT_BLOCK_BREAK_RADIUS; x <= TNT_BLOCK_BREAK_RADIUS; x++) {
-				for (int z = -TNT_BLOCK_BREAK_RADIUS; z <= TNT_BLOCK_BREAK_RADIUS; z++) {
+		for (int y = -radius; y <= radius; y++) {
+			for (int x = -radius; x <= radius; x++) {
+				for (int z = -radius; z <= radius; z++) {
 					if (x * x + y * y + z * z > radiusSquared) {
 						continue;
 					}

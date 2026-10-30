@@ -7,7 +7,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public final class SkeletonTargetingRules {
-	public static final double TARGET_RANGE = 50.0D;
+	public static final double TARGET_RANGE = 36.0D;
 
 	private SkeletonTargetingRules() {
 	}

@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class AbstractSkeletonAimMixin {
 	@Inject(method = "createAttributes", at = @At("RETURN"))
 	private static void minecraftmod$extendSkeletonFollowRange(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
-		cir.getReturnValue().add(Attributes.FOLLOW_RANGE, 50.0D);
+		cir.getReturnValue().add(Attributes.FOLLOW_RANGE, 36.0D);
 	}
 
 	@Redirect(
@@ -48,34 +48,20 @@ public abstract class AbstractSkeletonAimMixin {
 			return projectile;
 		}
 
-		Projectile result = Projectile.spawnProjectileUsingShoot(
+		return Projectile.spawnProjectileUsingShoot(
 			projectile,
 			level,
 			projectileStack,
 			x,
 			y,
 			z,
-			Math.max(velocity, 3.0F),
-			0.0F
+			velocity,
+			inaccuracy
 		);
-
-		if (result instanceof AbstractArrow arrow) {
-			arrow.setNoGravity(true);
-			Vec3 motion = arrow.getDeltaMovement();
-			if (motion.lengthSqr() > 1.0E-4D) {
-				arrow.setPos(
-					arrow.getX() + motion.x * 0.25D,
-					arrow.getY() + motion.y * 0.25D,
-					arrow.getZ() + motion.z * 0.25D
-				);
-			}
-		}
-
-		return result;
 	}
 
 	@ModifyConstant(method = "registerGoals", constant = @Constant(floatValue = 8.0F))
 	private float minecraftmod$extendSkeletonTargetRange(float original) {
-		return 50.0F;
+		return 36.0F;
 	}
 }
