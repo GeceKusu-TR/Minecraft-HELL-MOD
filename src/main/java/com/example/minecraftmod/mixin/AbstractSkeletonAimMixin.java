@@ -1,6 +1,7 @@
 package com.example.minecraftmod.mixin;
 
 import com.example.minecraftmod.SkeletonTargetingRules;
+import com.example.minecraftmod.SkeletonLeaderRules;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -56,7 +57,7 @@ public abstract class AbstractSkeletonAimMixin {
 			y,
 			z,
 			velocity,
-			inaccuracy
+			SkeletonLeaderRules.adjustArrowInaccuracy(skeleton, inaccuracy)
 		);
 	}
 

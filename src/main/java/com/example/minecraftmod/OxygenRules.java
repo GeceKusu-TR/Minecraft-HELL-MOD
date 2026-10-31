@@ -41,6 +41,10 @@ public final class OxygenRules {
 		return helmet(player).is(Items.LEATHER_HELMET);
 	}
 
+	public static boolean hasTurtleShellHelmet(Player player) {
+		return helmet(player).is(Items.TURTLE_HELMET);
+	}
+
 	public static boolean isUnderwater(Player player) {
 		return isUnderwater((LivingEntity)player);
 	}

@@ -1,6 +1,7 @@
 package com.example.minecraftmod.mixin;
 
 import com.example.minecraftmod.SnowRules;
+import com.example.minecraftmod.SkeletonLeaderRules;
 import com.example.minecraftmod.DragonRules;
 import com.example.minecraftmod.EndPortalRitualRules;
 import com.example.minecraftmod.GhastRules;
@@ -24,6 +25,7 @@ public abstract class ServerLevelTimeMixin {
 			serverLevel.setDayTime(GrassCurseRules.forcedTime(serverLevel));
 		}
 		SnowRules.applyAroundPlayers(serverLevel);
+		SkeletonLeaderRules.tick(serverLevel);
 		DragonRules.tick(serverLevel);
 		GhastRules.tick(serverLevel);
 		EndPortalRitualRules.tick(serverLevel);
