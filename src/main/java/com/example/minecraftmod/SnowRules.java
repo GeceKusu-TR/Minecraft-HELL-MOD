@@ -15,6 +15,7 @@ import net.minecraft.world.entity.animal.golem.SnowGolem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -28,7 +29,7 @@ public final class SnowRules {
 	public static final int THICK_SNOW_HEIGHT = 180;
 	public static final int APPLY_RADIUS_CHUNKS = 18;
 	public static final int CHUNK_SIZE = 16;
-	private static final int HARDCORE_SNOW_GOLEM_HEIGHT = 200;
+	private static final int HARDCORE_SNOW_GOLEM_HEIGHT = 130;
 	private static final int HARDCORE_SNOW_GOLEM_SPAWN_INTERVAL_TICKS = 20;
 	private static final int HARDCORE_SNOW_GOLEM_ATTACK_INTERVAL_TICKS = 20;
 	private static final double HARDCORE_SNOW_GOLEM_LOCAL_RADIUS = 16.0D;
@@ -166,25 +167,23 @@ public final class SnowRules {
 	}
 
 	private static BlockPos findSnowGolemSpawnPosition(ServerLevel level, ServerPlayer player) {
+		BlockPos playerColumn = player.blockPosition();
+		BlockPos directSpawn = surfaceSpawnPosition(level, playerColumn.getX(), playerColumn.getZ());
+		if (isValidSnowGolemSpawnPosition(level, directSpawn)) {
+			return directSpawn;
+		}
+
 		RandomSource random = player.getRandom();
-		for (int attempt = 0; attempt < DifficultyScalingRules.more(HARDCORE_SNOW_GOLEM_SPAWN_ATTEMPTS); attempt++) {
+		for (int attempt = 0; attempt < DifficultyScalingRules.more(HARDCORE_SNOW_GOLEM_SPAWN_ATTEMPTS * 4); attempt++) {
 			double angle = random.nextDouble() * Math.PI * 2.0D;
 			double localRadius = DifficultyScalingRules.more(HARDCORE_SNOW_GOLEM_LOCAL_RADIUS);
 			double globalRadius = DifficultyScalingRules.more(HARDCORE_SNOW_GOLEM_GLOBAL_RADIUS);
 			double distance = localRadius + random.nextDouble() * (globalRadius - localRadius);
 			int x = (int)Math.floor(player.getX() + Math.cos(angle) * distance);
 			int z = (int)Math.floor(player.getZ() + Math.sin(angle) * distance);
-			int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-			BlockPos spawnPos = new BlockPos(x, y, z);
+			BlockPos spawnPos = surfaceSpawnPosition(level, x, z);
 
-			if (spawnPos.getY() < HARDCORE_SNOW_GOLEM_HEIGHT
-				|| !level.hasChunk(spawnPos.getX() >> 4, spawnPos.getZ() >> 4)
-				|| !level.canSeeSky(spawnPos)
-				|| !level.isEmptyBlock(spawnPos)
-				|| !level.isEmptyBlock(spawnPos.above())
-				|| !level.getFluidState(spawnPos).isEmpty()
-				|| !level.getFluidState(spawnPos.above()).isEmpty()
-				|| !level.getBlockState(spawnPos.below()).isFaceSturdy(level, spawnPos.below(), Direction.UP)) {
+			if (!isValidSnowGolemSpawnPosition(level, spawnPos)) {
 				continue;
 			}
 
@@ -192,6 +191,31 @@ public final class SnowRules {
 		}
 
 		return null;
+	}
+
+	private static BlockPos surfaceSpawnPosition(ServerLevel level, int x, int z) {
+		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+		return new BlockPos(x, y, z);
+	}
+
+	private static boolean isValidSnowGolemSpawnPosition(ServerLevel level, BlockPos spawnPos) {
+		return spawnPos.getY() >= HARDCORE_SNOW_GOLEM_HEIGHT
+			&& level.getBiome(spawnPos).value().getPrecipitationAt(spawnPos, spawnPos.getY()) == Biome.Precipitation.SNOW
+			&& level.hasChunk(spawnPos.getX() >> 4, spawnPos.getZ() >> 4)
+			&& level.isEmptyBlock(spawnPos)
+			&& level.isEmptyBlock(spawnPos.above())
+			&& level.getFluidState(spawnPos).isEmpty()
+			&& level.getFluidState(spawnPos.above()).isEmpty()
+			&& hasSnowGolemSupport(level, spawnPos);
+	}
+
+	private static boolean hasSnowGolemSupport(ServerLevel level, BlockPos spawnPos) {
+		BlockPos support = spawnPos.below();
+		if (level.getBlockState(support).is(Blocks.SNOW)) {
+			support = support.below();
+		}
+
+		return level.getBlockState(support).isFaceSturdy(level, support, Direction.UP);
 	}
 
 	private static int countSnowGolems(ServerLevel level, Vec3 center, double radius) {
@@ -221,7 +245,6 @@ public final class SnowRules {
 
 	private static boolean isEligibleHighAltitudePlayer(ServerPlayer player) {
 		return player.isAlive()
-			&& !player.isCreative()
 			&& !player.isSpectator()
 			&& !NoMobCommands.isNoMobEnabled(player)
 			&& player.getY() >= HARDCORE_SNOW_GOLEM_HEIGHT;

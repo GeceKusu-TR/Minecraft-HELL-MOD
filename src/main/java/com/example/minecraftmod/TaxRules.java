@@ -7,7 +7,6 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 
 public final class TaxRules {
 	public static final int DAMAGE_INTERVAL_TICKS = 20;
@@ -22,8 +21,12 @@ public final class TaxRules {
 	private TaxRules() {
 	}
 
-	public static boolean isInToxicNetherWater(ServerPlayer player) {
-		return player.level().dimension() == Level.NETHER && player.isEyeInFluid(FluidTags.WATER);
+	public static boolean isInToxicWater(ServerPlayer player) {
+		return player.isEyeInFluid(FluidTags.WATER);
+	}
+
+	public static int damageIntervalTicks() {
+		return DifficultyScalingRules.sooner(DAMAGE_INTERVAL_TICKS);
 	}
 
 	public static int escalatingDamage(int exposureSeconds) {
@@ -63,6 +66,13 @@ public final class TaxRules {
 			return;
 		}
 
+		if (stack.is(Items.ELYTRA)) {
+			damage = Math.min(damage, Math.max(0, stack.getMaxDamage() - 1 - stack.getDamageValue()));
+			if (damage <= 0) {
+				return;
+			}
+		}
+
 		stack.hurtAndBreak(damage, player, slot);
 	}
 
@@ -77,6 +87,11 @@ public final class TaxRules {
 			}
 
 			int nextDamage = stack.getDamageValue() + inventoryDamage;
+			if (stack.is(Items.ELYTRA)) {
+				stack.setDamageValue(Math.min(stack.getMaxDamage() - 1, nextDamage));
+				continue;
+			}
+
 			if (nextDamage >= stack.getMaxDamage()) {
 				stack.shrink(1);
 				stack.setDamageValue(0);

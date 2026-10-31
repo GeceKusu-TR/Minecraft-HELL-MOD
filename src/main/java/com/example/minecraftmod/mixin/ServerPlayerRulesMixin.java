@@ -84,7 +84,7 @@ public abstract class ServerPlayerRulesMixin {
 
 		minecraftmod$tickAirborneFallState(player);
 		minecraftmod$tickSprintPenalty(player);
-		minecraftmod$tickToxicNetherWater(player);
+		minecraftmod$tickToxicWater(player);
 		minecraftmod$tickPersistentFireDamage(player);
 		AdvancementRules.clearGhastFireballBurnIfNotBurning(player);
 		GrassCurseRules.tickPlayer(player);
@@ -204,15 +204,15 @@ public abstract class ServerPlayerRulesMixin {
 	}
 
 	@Unique
-	private void minecraftmod$tickToxicNetherWater(ServerPlayer player) {
-		if (!TaxRules.isInToxicNetherWater(player)) {
+	private void minecraftmod$tickToxicWater(ServerPlayer player) {
+		if (!TaxRules.isInToxicWater(player)) {
 			minecraftmod$toxicWaterTicks = 0;
 			minecraftmod$toxicWaterSeconds = 0;
 			return;
 		}
 
 		minecraftmod$toxicWaterTicks++;
-		if (minecraftmod$toxicWaterTicks < TaxRules.DAMAGE_INTERVAL_TICKS) {
+		if (minecraftmod$toxicWaterTicks < TaxRules.damageIntervalTicks()) {
 			return;
 		}
 
