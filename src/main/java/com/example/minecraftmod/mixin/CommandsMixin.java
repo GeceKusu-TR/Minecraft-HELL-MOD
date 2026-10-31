@@ -2,6 +2,7 @@ package com.example.minecraftmod.mixin;
 
 import com.example.minecraftmod.NoMobCommands;
 import com.example.minecraftmod.EndTermsRules;
+import com.example.minecraftmod.LightningWaveCommands;
 import com.example.minecraftmod.TestBookRules;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandBuildContext;
@@ -24,6 +25,7 @@ public abstract class CommandsMixin {
 	private void minecraftmod$registerNoMobCommand(Commands.CommandSelection commandSelection, CommandBuildContext commandBuildContext, CallbackInfo ci) {
 		NoMobCommands.register(this.dispatcher);
 		EndTermsRules.register(this.dispatcher);
+		LightningWaveCommands.register(this.dispatcher);
 		TestBookRules.register(this.dispatcher);
 	}
 }

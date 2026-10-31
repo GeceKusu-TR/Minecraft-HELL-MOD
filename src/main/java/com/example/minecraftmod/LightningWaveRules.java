@@ -69,7 +69,7 @@ public final class LightningWaveRules {
 		changed |= data.refreshCompletion(level);
 		changed |= data.growChance(level.getLevelData().isHardcore(), gameTime);
 
-		if (!level.isThundering()) {
+		if (!level.isThundering() && !data.forcedWave) {
 			changed |= data.clearStorm();
 			if (changed) {
 				data.setDirty();
@@ -100,6 +100,7 @@ public final class LightningWaveRules {
 				}
 			} else {
 				data.clearWave();
+				data.forcedWave = false;
 				changed = true;
 			}
 		}
@@ -120,6 +121,22 @@ public final class LightningWaveRules {
 			data.completed = true;
 			data.setDirty();
 		}
+	}
+
+	public static boolean forceUltraThunder(ServerLevel level) {
+		if (level.dimension() != Level.OVERWORLD) {
+			return false;
+		}
+
+		long gameTime = level.getGameTime();
+		LightningWaveSavedData data = data(level);
+		data.initializeIfNeeded(level.getLevelData().isHardcore(), gameTime);
+		data.stormActive = true;
+		data.forcedWave = true;
+		data.startWave(gameTime);
+		level.setWeatherParameters(0, 800, true, true);
+		data.setDirty();
+		return true;
 	}
 
 	private static void sendWarningFlash(ServerLevel level) {
@@ -242,6 +259,7 @@ public final class LightningWaveRules {
 			Codec.BOOL.optionalFieldOf("initialized", false).forGetter(data -> data.initialized),
 			Codec.BOOL.optionalFieldOf("completed", false).forGetter(data -> data.completed),
 			Codec.BOOL.optionalFieldOf("storm_active", false).forGetter(data -> data.stormActive),
+			Codec.BOOL.optionalFieldOf("forced_wave", false).forGetter(data -> data.forcedWave),
 			Codec.LONG.optionalFieldOf("warning_ends_at", -1L).forGetter(data -> data.warningEndsAt),
 			Codec.LONG.optionalFieldOf("wave_ends_at", -1L).forGetter(data -> data.waveEndsAt),
 			Codec.LONG.optionalFieldOf("last_warning_flash_at", Long.MIN_VALUE).forGetter(data -> data.lastWarningFlashAt),
@@ -259,13 +277,14 @@ public final class LightningWaveRules {
 		private boolean initialized;
 		private boolean completed;
 		private boolean stormActive;
+		private boolean forcedWave;
 		private long warningEndsAt;
 		private long waveEndsAt;
 		private long lastWarningFlashAt;
 		private long lastStrikeAt;
 
 		private LightningWaveSavedData() {
-			this(0.0D, 0L, false, false, false, -1L, -1L, Long.MIN_VALUE, Long.MIN_VALUE);
+			this(0.0D, 0L, false, false, false, false, -1L, -1L, Long.MIN_VALUE, Long.MIN_VALUE);
 		}
 
 		private LightningWaveSavedData(
@@ -274,6 +293,7 @@ public final class LightningWaveRules {
 			boolean initialized,
 			boolean completed,
 			boolean stormActive,
+			boolean forcedWave,
 			long warningEndsAt,
 			long waveEndsAt,
 			long lastWarningFlashAt,
@@ -284,6 +304,7 @@ public final class LightningWaveRules {
 			this.initialized = initialized;
 			this.completed = completed;
 			this.stormActive = stormActive;
+			this.forcedWave = forcedWave;
 			this.warningEndsAt = warningEndsAt;
 			this.waveEndsAt = waveEndsAt;
 			this.lastWarningFlashAt = lastWarningFlashAt;
@@ -347,8 +368,9 @@ public final class LightningWaveRules {
 		}
 
 		private boolean clearStorm() {
-			boolean changed = stormActive || hasWave();
+			boolean changed = stormActive || forcedWave || hasWave();
 			stormActive = false;
+			forcedWave = false;
 			clearWave();
 			return changed;
 		}
