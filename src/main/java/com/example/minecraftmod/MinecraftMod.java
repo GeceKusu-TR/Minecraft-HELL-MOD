@@ -20,6 +20,7 @@ public class MinecraftMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		PayloadTypeRegistry.playS2C().register(CompletionHudPayload.TYPE, CompletionHudPayload.CODEC);
+		PayloadTypeRegistry.playS2C().register(LightningWaveFlashPayload.TYPE, LightningWaveFlashPayload.CODEC);
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			boolean completed = EndCompletionRules.isCompleted(handler.player);
 			boolean hardcoreEscalated = EndCompletionRules.isHardcoreEscalated(handler.player);

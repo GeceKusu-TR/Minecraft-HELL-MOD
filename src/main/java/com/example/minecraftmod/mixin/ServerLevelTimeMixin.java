@@ -6,6 +6,7 @@ import com.example.minecraftmod.DragonRules;
 import com.example.minecraftmod.EndPortalRitualRules;
 import com.example.minecraftmod.GhastRules;
 import com.example.minecraftmod.GrassCurseRules;
+import com.example.minecraftmod.LightningWaveRules;
 import com.example.minecraftmod.PerformanceRules;
 import com.example.minecraftmod.WorldAnnoyanceRules;
 import net.minecraft.server.level.ServerLevel;
@@ -24,6 +25,7 @@ public abstract class ServerLevelTimeMixin {
 		if (serverLevel.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
 			serverLevel.setDayTime(GrassCurseRules.forcedTime(serverLevel));
 		}
+		LightningWaveRules.tick(serverLevel);
 		SnowRules.applyAroundPlayers(serverLevel);
 		SkeletonLeaderRules.tick(serverLevel);
 		DragonRules.tick(serverLevel);

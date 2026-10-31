@@ -37,6 +37,7 @@ public final class EndCompletionRules {
 		}
 
 		player.addTag(DifficultyScalingRules.COMPLETED_TAG);
+		LightningWaveRules.onWorldCompleted(level);
 		String elapsed = formatGameTime(level.getGameTime());
 		if (level.getLevelData().isHardcore()) {
 			player.addTag(DifficultyScalingRules.HARDCORE_ESCALATED_TAG);
