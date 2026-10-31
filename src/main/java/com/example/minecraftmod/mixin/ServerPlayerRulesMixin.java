@@ -3,6 +3,7 @@ package com.example.minecraftmod.mixin;
 import com.example.minecraftmod.AdvancementRules;
 import com.example.minecraftmod.CompletionHudPayload;
 import com.example.minecraftmod.DifficultyScalingRules;
+import com.example.minecraftmod.DeathMessageRules;
 import com.example.minecraftmod.EndCompletionRules;
 import com.example.minecraftmod.EndExperienceRules;
 import com.example.minecraftmod.EndTermsRules;
@@ -117,6 +118,7 @@ public abstract class ServerPlayerRulesMixin {
 	@Inject(method = "die", at = @At("HEAD"))
 	private void minecraftmod$resetFallStateOnDeath(DamageSource damageSource, CallbackInfo ci) {
 		ServerPlayer player = (ServerPlayer)(Object)this;
+		DeathMessageRules.showRandomMessage(player, damageSource);
 		AdvancementRules.grantGhastDeath(player, damageSource);
 		EndExperienceRules.clearPlayer(player);
 		EndTermsRules.onDisconnect(player);
