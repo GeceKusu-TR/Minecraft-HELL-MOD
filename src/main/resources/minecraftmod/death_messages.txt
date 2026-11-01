@@ -118,6 +118,18 @@ Fırtınanın normal olmadığını anladın, fakat çok geç anladın.
 Gökyüzü parladı, metal zırhın cevap verdi ve can barın kapandı.
 Yıldırım dalgası sana hava olaylarının da düşman olabileceğini gösterdi.
 
+=== Yıldırım ===
+Normal yıldırım sandın; yine de yıldırımın normal bir sonucu var.
+Gökyüzü seni seçti ve kararını değiştirmedi.
+Yıldırımın yakına düşeceğini düşündün; bu kez yeterince yakındı.
+Fırtınada metal zırhla dolaştın, gökyüzü bunu not aldı.
+Bir ışık çaktı, ardından maceran sona erdi.
+Yıldırım kısa sürdü; ölüm mesajın daha uzun sürdü.
+Bulutlara meydan okudun, bulutlar cevap verdi.
+Fırtınanın sesini duydun ama uyarıyı dikkate almadın.
+Gökyüzüne baktın, gökyüzü de seni hedef aldı.
+Yıldırımın nadir olması seni güvende yapmadı.
+
 === Aşırı Isınmış Fırın ===
 Fırını fazla çalıştırdın; fırın da seni yakıt olarak kullandı.
 Demir eritmeye çalıştın, sonunda kendi canını erittin.
@@ -201,3 +213,51 @@ Patlama başladı, plan bitti ve bloklar senden daha şanslı çıktı.
 TNT'yi güvenli sandığın yerde çalıştırdın; güvenli yer yokmuş.
 Patlayıcıyı kontrol ettiğini sandın, ama son sözü patlama söyledi.
 Bir düğmeye bastın, bütün dünya cevap verdi; sen veremedin.
+
+=== Düşme ===
+Yüksekten düştün; yer seni bekliyordu, sen de ona doğru geldin.
+Düşüşü kontrol edemedin, yer de kontrolü senden aldı.
+Bir blok daha aşağı indin ve bu kez geri dönüş olmadı.
+Yere yaklaşırken planın vardı; yere çarparken planın kalmadı.
+Manzara güzeldi, iniş biraz fazla kesin oldu.
+Yükseklikle aran iyi değildi; yer bunu kanıtladı.
+Havada süzülmeyi denedin, yerçekimi daha ikna ediciydi.
+Bir sonraki adımın zemin olmalıydı; olmadı.
+Düşüş hasarını hesaplamadın, dünya senin yerine hesapladı.
+Yukarı çıkmak kolaydı, aşağı iniş pahalıya mal oldu.
+
+=== Boğulma ===
+Su altında nefesinin bittiğini fark ettiğinde çıkış çok uzaktaydı.
+Yüzeye çıkmaya çalıştın, su seni daha uzun süre tuttu.
+Boğulma planın değildi; ama plan yapmak için de nefesin kalmadı.
+Su sakin görünüyordu, ciğerlerin aynı fikirde değildi.
+Oksijen bitti, yüzme kariyerin de onunla birlikte sona erdi.
+Yüzeye birkaç blok kalmıştı; birkaç blok yeterli olmadı.
+Suya girdin, geri çıkamadın.
+Nefes barını izlemek yerine manzarayı izledin.
+Boğulmayı önlemek için bir kapı aradın; zaman senden önce bitti.
+Su altı maceran, su altında kaldı.
+
+=== Lav ===
+Lavın içine girdin ve bunun sıcak bir hata olduğunu anladın.
+Lav seni yakmadı; kararlarını eritti.
+Nether'da güvenli zemin aradın, lav buldun.
+Lav yavaş görünüyordu, ölümün o kadar yavaş değildi.
+Bir adım daha attın ve lav seni geri göndermedi.
+Lavla arandaki mesafe azaldıkça can barın da azaldı.
+Sıcak bir banyo fikri beklediğinden kötü sonuçlandı.
+Lavın içinden çıkış yolu vardı; sen o yolu bulamadın.
+Nether'ın en parlak gölüne fazla yaklaştın.
+Lav seni gördü, sen de lavı biraz fazla yakından gördün.
+
+=== Bilinmeyen ===
+Ölüm sebebin bile bu açıklamayı yeterli bulmadı.
+Ne olduğunu bilmiyoruz; ama hayatta olmadığın kesin.
+Dünya seni nasıl öldürdüğünü açıklamaya zahmet etmedi.
+Bu ölüm o kadar garipti ki mod bile kategori bulamadı.
+Bir şey oldu, canın bitti ve kayıt kapandı.
+Ölüm sebebini araştırmak için artık biraz geç.
+Bu kez suçlu belli değil; sonuç fazlasıyla belli.
+Hayatta kalma planın vardı, ölüm sebebin daha yaratıcı çıktı.
+Ne seni öldürdüyse görevini başarıyla tamamladı.
+Mod bunu açıklayamadı; sen de açıklayamazsın.

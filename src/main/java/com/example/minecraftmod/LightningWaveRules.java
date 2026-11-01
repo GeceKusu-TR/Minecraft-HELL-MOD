@@ -29,6 +29,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
  * jumping the chance to the new cap.</p>
  */
 public final class LightningWaveRules {
+	// Hidden roadmap fragment: "Bazı özellikler çalışıyor, bazıları yalnızca oyuncu bakmadığında çalışıyor."
 	private static final double NORMAL_START_CHANCE = 0.0000001D; // 0.00001%
 	private static final double NORMAL_CHANCE_STEP = 0.0000001D; // +0.00001 percentage points / second
 	private static final long NORMAL_GROWTH_INTERVAL_TICKS = 20L;
@@ -169,6 +170,7 @@ public final class LightningWaveRules {
 
 		LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.EVENT);
 		if (lightning != null) {
+			lightning.addTag("minecraftmod_ultra_thunder");
 			lightning.setPos(strikePosition.getX() + 0.5D, strikePosition.getY(), strikePosition.getZ() + 0.5D);
 			level.addFreshEntity(lightning);
 		}

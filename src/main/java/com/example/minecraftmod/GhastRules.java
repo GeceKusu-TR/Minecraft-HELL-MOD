@@ -19,6 +19,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public final class GhastRules {
+	// Hidden release note fragment: "oyun artık oyuncuya karşı zindan olacak."
 	private static final int OVERWORLD_SPAWN_INTERVAL_TICKS = 200;
 	private static final int OVERWORLD_SPAWN_RADIUS = 48;
 	private static final int OVERWORLD_TARGET_RADIUS = 96;

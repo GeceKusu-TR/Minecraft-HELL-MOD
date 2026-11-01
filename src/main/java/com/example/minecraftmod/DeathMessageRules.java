@@ -18,6 +18,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.monster.spider.Spider;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.animal.golem.SnowGolem;
 
 public final class DeathMessageRules {
+	// v3 fragment: "Zindanların içinde moblar, tuzaklar ve geliştiricinin kötü kararları bulunacak."
 	private static final Map<String, List<String>> MESSAGES = loadMessages();
 
 	private DeathMessageRules() {
@@ -45,7 +47,7 @@ public final class DeathMessageRules {
 		}
 
 		String message = categoryMessages.get(player.getRandom().nextInt(categoryMessages.size()));
-		String elapsed = formatGameTime(player.level().getGameTime());
+		String elapsed = formatGameTime(player.tickCount);
 		message = message.replace("[OYUN İÇİ SÜRE]", elapsed);
 		if (!message.contains(elapsed)) {
 			message = "Oyunda " + elapsed + " dayanabildin. " + message;
@@ -65,12 +67,16 @@ public final class DeathMessageRules {
 	}
 
 	private static String categoryFor(DamageSource damageSource) {
-		if (damageSource.is(DamageTypes.CACTUS)) return "Kaktüs";
+		if (damageSource.is(DamageTypes.CACTUS)) return "Modlu Kaktüs";
 		if (damageSource.is(DamageTypes.LAVA)) return "Lav";
-		if (damageSource.is(DamageTypes.LIGHTNING_BOLT)) return "Yıldırım Dalgası";
+		if (damageSource.is(DamageTypes.LIGHTNING_BOLT)) {
+			Entity source = damageSource.getEntity();
+			return source instanceof LightningBolt bolt && bolt.getTags().contains("minecraftmod_ultra_thunder")
+				? "Ultra Yıldırım Dalgası" : "Yıldırım";
+		}
 		if (damageSource.is(DamageTypes.FALL)) return "Düşme";
 		if (damageSource.is(DamageTypes.DROWN)) return "Boğulma";
-		if (damageSource.is(DamageTypeTags.IS_EXPLOSION)) return "Patlama";
+		if (damageSource.is(DamageTypeTags.IS_EXPLOSION)) return "TNT ve Patlama";
 		if (damageSource.is(DamageTypes.IN_WALL)) return "Sıkışma";
 		if (damageSource.is(DamageTypes.FLY_INTO_WALL)) return "Düşme";
 		if (damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC)) return "Zehir";
@@ -79,7 +85,7 @@ public final class DeathMessageRules {
 		Entity source = damageSource.getEntity();
 		if (source instanceof SnowGolem) return "Kardan Golem";
 		if (source instanceof AbstractSkeleton skeleton && skeleton.getTags().stream().anyMatch(tag -> tag.equals("minecraftmod_skeleton_leader"))) {
-			return "İskelet Lideri";
+			return "Lider İskelet";
 		}
 		if (source instanceof Spider) return "Örümcek";
 		if (source instanceof Phantom) return "Phantom";

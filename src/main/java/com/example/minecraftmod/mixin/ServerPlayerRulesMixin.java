@@ -19,6 +19,7 @@ import com.example.minecraftmod.TestBookRules;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -27,6 +28,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
@@ -123,6 +125,17 @@ public abstract class ServerPlayerRulesMixin {
 		EndExperienceRules.clearPlayer(player);
 		EndTermsRules.onDisconnect(player);
 		minecraftmod$resetFallState(player);
+	}
+
+	@Redirect(
+		method = "die",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"
+		)
+	)
+	private void minecraftmod$suppressVanillaDeathMessage(PlayerList playerList, net.minecraft.network.chat.Component message, boolean bypassHiddenChat) {
+		// The custom red random death message is sent from the HEAD hook above.
 	}
 
 	@Unique

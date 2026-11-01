@@ -4,6 +4,7 @@ import com.example.minecraftmod.NoMobCommands;
 import com.example.minecraftmod.EndTermsRules;
 import com.example.minecraftmod.LightningWaveCommands;
 import com.example.minecraftmod.TestBookRules;
+import com.example.minecraftmod.EndCompletionRules;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -27,5 +28,6 @@ public abstract class CommandsMixin {
 		EndTermsRules.register(this.dispatcher);
 		LightningWaveCommands.register(this.dispatcher);
 		TestBookRules.register(this.dispatcher);
+		EndCompletionRules.register(this.dispatcher);
 	}
 }
