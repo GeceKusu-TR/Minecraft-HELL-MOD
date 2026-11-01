@@ -19,7 +19,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 public final class DragonRules {
-	// If you are reading source: "Oyuncu: Bunu nasıl geçeceğim? Kod: Geçemeyeceksin."
 	private static final int BASE_FLAME_CYCLE_TICKS = 67;
 	private static final int MIN_FLAME_CYCLE_TICKS = 5;
 	private static final int FLAME_CYCLE_REDUCTION_PER_CRYSTAL = 4;

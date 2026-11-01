@@ -39,6 +39,12 @@ Linux/macOS:
 
 Derlenen mod dosyaları `build/libs/` klasörüne yazılır.
 
+## Geliştirme duyurusu
+
+Bir sonraki büyük güncelleme şimdilik uzun bir süreliğine rafa kaldırılmıştır. Bunun sebebi stratejik bir plan, gizli bir geliştirme takvimi veya dünyayı sarsacak bir tasarım kararı değildir; aklıma fikir gelmedi. Gelen iki fikir de kapıda bekleyip içeri girmeden geri döndü.
+
+Mod şu anki hâliyle oyuncuyu öldürmeye devam edecek. Geliştirici ise yeni fikir bulana kadar README dosyasına bakıp ciddi bir plan yapıyormuş gibi davranacaktır. Yeni güncelleme, fikirler tekrar çalışmaya karar verirse ve geliştirici kahvesini yanlışlıkla kod yerine içerse geri dönebilir.
+
 ## Proje yapısı
 
 - `src/main/java`: Ortak ve sunucu tarafı mod kodu

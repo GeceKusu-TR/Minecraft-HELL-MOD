@@ -29,7 +29,6 @@ import net.minecraft.world.level.saveddata.SavedDataType;
  * jumping the chance to the new cap.</p>
  */
 public final class LightningWaveRules {
-	// Hidden roadmap fragment: "Bazı özellikler çalışıyor, bazıları yalnızca oyuncu bakmadığında çalışıyor."
 	private static final double NORMAL_START_CHANCE = 0.0000001D; // 0.00001%
 	private static final double NORMAL_CHANCE_STEP = 0.0000001D; // +0.00001 percentage points / second
 	private static final long NORMAL_GROWTH_INTERVAL_TICKS = 20L;

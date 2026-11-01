@@ -2,6 +2,7 @@ package com.example.minecraftmod.client;
 
 import com.example.minecraftmod.CompletionHudPayload;
 import com.example.minecraftmod.LightningWaveFlashPayload;
+import com.example.minecraftmod.DeathMessagePayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -23,6 +24,8 @@ public class MinecraftModClient implements ClientModInitializer {
 					context.client().level.setSkyFlashTime(payload.durationTicks());
 				}
 			}));
+		ClientPlayNetworking.registerGlobalReceiver(DeathMessagePayload.TYPE, (payload, context) ->
+			context.client().execute(() -> DeathMessageHudState.setMessage(payload.message())));
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> HardModeHudState.setCompleted(false, false));
 		HudRenderCallback.EVENT.register((guiGraphics, deltaTracker) -> {
 			Minecraft minecraft = Minecraft.getInstance();

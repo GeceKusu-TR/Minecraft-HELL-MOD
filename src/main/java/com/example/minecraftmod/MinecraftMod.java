@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 
 public class MinecraftMod implements ModInitializer {
 	public static final String MOD_ID = "minecraftmod";
-	// v3 fragment: "Minecraft HELL MOD v3 hazırlanıyor."
-
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
@@ -22,6 +20,7 @@ public class MinecraftMod implements ModInitializer {
 	public void onInitialize() {
 		PayloadTypeRegistry.playS2C().register(CompletionHudPayload.TYPE, CompletionHudPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(LightningWaveFlashPayload.TYPE, LightningWaveFlashPayload.CODEC);
+		PayloadTypeRegistry.playS2C().register(DeathMessagePayload.TYPE, DeathMessagePayload.CODEC);
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			boolean completed = EndCompletionRules.isCompleted(handler.player);
 			boolean hardcoreEscalated = EndCompletionRules.isHardcoreEscalated(handler.player);

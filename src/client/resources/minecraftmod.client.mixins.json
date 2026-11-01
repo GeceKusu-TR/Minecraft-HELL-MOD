@@ -11,6 +11,7 @@
 		"AtmosphericFogMixin",
 		"BookViewScreenMixin",
 		"EndLoadingGuiMixin"
+		,"DeathScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

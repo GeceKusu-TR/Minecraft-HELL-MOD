@@ -12,7 +12,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 public final class EndCompletionRules {
-	// Final fragment: "Dikkatli incelerseniz neden hâlâ oynadığınızı sorgulayabilirsiniz."
 	private static final int PORTAL_SEARCH_RADIUS = 4;
 	private static final int PORTAL_VERTICAL_RADIUS = 2;
 

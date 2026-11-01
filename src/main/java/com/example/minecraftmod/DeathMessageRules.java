@@ -10,10 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -27,7 +26,6 @@ import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.animal.golem.SnowGolem;
 
 public final class DeathMessageRules {
-	// v3 fragment: "Zindanların içinde moblar, tuzaklar ve geliştiricinin kötü kararları bulunacak."
 	private static final Map<String, List<String>> MESSAGES = loadMessages();
 
 	private DeathMessageRules() {
@@ -52,7 +50,9 @@ public final class DeathMessageRules {
 		if (!message.contains(elapsed)) {
 			message = "Oyunda " + elapsed + " dayanabildin. " + message;
 		}
-		player.sendSystemMessage(Component.literal(message).withStyle(ChatFormatting.RED));
+		if (ServerPlayNetworking.canSend(player, DeathMessagePayload.TYPE)) {
+			ServerPlayNetworking.send(player, new DeathMessagePayload(message));
+		}
 	}
 
 	private static String formatGameTime(long gameTimeTicks) {
