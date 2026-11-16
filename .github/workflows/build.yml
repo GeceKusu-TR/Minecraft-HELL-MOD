@@ -19,17 +19,17 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v6
+        uses: gradle/actions/wrapper-validation@7ca78c16c887dc6c5f36fd6d0cb0f5c23d940e69 # v6
       - name: setup jdk
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: '21'
           distribution: 'microsoft'
           cache: gradle
       - name: setup gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: build and test
@@ -38,7 +38,7 @@ jobs:
         run: ./gradlew -I tools/bug-audit.init.gradle runServer
       - name: capture build artifacts
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: Artifacts
           if-no-files-found: ignore

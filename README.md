@@ -1,5 +1,8 @@
 # Minecraft Hell Mode
 
+[![Build](https://github.com/GeceKusu-TR/Minecraft-HELL-MOD/actions/workflows/build.yml/badge.svg)](https://github.com/GeceKusu-TR/Minecraft-HELL-MOD/actions/workflows/build.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/GeceKusu-TR/Minecraft-HELL-MOD/badge)](https://scorecard.dev/viewer/?uri=github.com/GeceKusu-TR/Minecraft-HELL-MOD)
+
 Minecraft 1.21.11 için Fabric modudur. Mod; hayatta kalma deneyimini zorlaştıran oyun kuralları, mob davranışları, çevre tehlikeleri ve End ilerleme kuralları ekler. Değişiklikler sunucu tarafında uygulanır; istemci tarafı yalnızca HUD, ekran ve görsel bildirimleri sağlar.
 
 ## Uyumluluk
