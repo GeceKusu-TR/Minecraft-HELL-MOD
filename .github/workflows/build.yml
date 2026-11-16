@@ -21,7 +21,7 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@7ca78c16c887dc6c5f36fd6d0cb0f5c23d940e69 # v6
+        uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6
       - name: setup jdk
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
