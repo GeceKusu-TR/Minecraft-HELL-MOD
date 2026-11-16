@@ -82,7 +82,7 @@ public final class OxygenRules {
 		return switch (oxygenStage(player)) {
 			case LOW -> hasLeatherHelmet(player) ? 0.0F : DifficultyScalingRules.more(4.0F);
 			case CRITICAL -> hasLeatherHelmet(player) ? 0.0F : DifficultyScalingRules.more(6.0F);
-			case DEADLY -> DEADLY_OXYGEN_DAMAGE;
+			case DEADLY -> DifficultyScalingRules.more(DEADLY_OXYGEN_DAMAGE);
 			case NONE -> 0.0F;
 		};
 	}

@@ -43,7 +43,7 @@ public final class GrassCurseRules {
 	private static final String AFTERMATH_TAG_PREFIX = "minecraftmod_grass_aftermath_";
 	private static final String FAKE_PLAYER_NAME = "kk88ff";
 	private static final UUID FAKE_PLAYER_UUID = UUID.nameUUIDFromBytes("minecraftmod:kk88ff".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-	private static final String BLACK_SKIN_TEXTURE_URL = "http://textures.minecraft.net/texture/c7acd6b5a7a61bb25892225d160138b4e97fa02cc33fbecb559deae4cb485f";
+	private static final String BLACK_SKIN_TEXTURE_URL = "https://textures.minecraft.net/texture/c7acd6b5a7a61bb25892225d160138b4e97fa02cc33fbecb559deae4cb485f";
 	private static final int TOTAL_TICKS = 20 * 10;
 	private static final int MESSAGE_INTERVAL_TICKS = 20;
 	private static final int TELEPORT_START_TICKS = 20 * 2;
@@ -199,6 +199,9 @@ public final class GrassCurseRules {
 			if (isActiveCursedGrass(stack)) {
 				return stack;
 			}
+		}
+		if (isActiveCursedGrass(player.containerMenu.getCarried())) {
+			return player.containerMenu.getCarried();
 		}
 		return ItemStack.EMPTY;
 	}

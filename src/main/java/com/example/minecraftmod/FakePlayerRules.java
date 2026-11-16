@@ -22,7 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
 public final class FakePlayerRules {
-	private static final String BLACK_SKIN_TEXTURE_URL = "http://textures.minecraft.net/texture/c7acd6b5a7a61bb25892225d160138b4e97fa02cc33fbecb559deae4cb485f";
+	private static final String BLACK_SKIN_TEXTURE_URL = "https://textures.minecraft.net/texture/c7acd6b5a7a61bb25892225d160138b4e97fa02cc33fbecb559deae4cb485f";
 	private static final Map<UUID, Map<UUID, Integer>> TEMP_FAKE_PLAYERS = new ConcurrentHashMap<>();
 
 	private FakePlayerRules() {

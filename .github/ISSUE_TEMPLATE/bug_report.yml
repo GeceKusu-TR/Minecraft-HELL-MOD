@@ -1,0 +1,43 @@
+name: Hata bildirimi
+description: Yeniden üretilebilen bir oynanış, kurulum veya build hatasını bildirin.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Lütfen public issue'a gizli bilgi veya güvenlik açığı ayrıntısı eklemeyin.
+  - type: input
+    id: versions
+    attributes:
+      label: Sürümler
+      description: Minecraft, Fabric Loader, Fabric API ve mod sürümlerini yazın.
+      placeholder: Minecraft 1.21.11 / Loader 0.19.3 / API 0.141.6 / Mod 2.8.11
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Yeniden üretme adımları
+      description: Hatanın oluşması için gereken adımları numaralı olarak yazın.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Beklenen sonuç
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Gerçekleşen sonuç
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log ve ek bağlam
+      description: İlgili log bölümünü, işletim sistemini ve yeni dünyada denenip denenmediğini ekleyin.
+      render: text

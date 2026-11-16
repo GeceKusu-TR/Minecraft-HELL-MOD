@@ -2,7 +2,6 @@ package com.example.minecraftmod.mixin;
 
 import com.example.minecraftmod.AdvancementRules;
 import com.example.minecraftmod.CompletionHudPayload;
-import com.example.minecraftmod.DifficultyScalingRules;
 import com.example.minecraftmod.DeathMessageRules;
 import com.example.minecraftmod.EndCompletionRules;
 import com.example.minecraftmod.EndExperienceRules;
@@ -73,7 +72,6 @@ public abstract class ServerPlayerRulesMixin {
 	private void minecraftmod$tickPlayerRules(CallbackInfo ci) {
 		ServerPlayer player = (ServerPlayer)(Object)this;
 		minecraftmod$syncCompletionHud(player);
-		DifficultyScalingRules.restoreFromPlayer(player);
 		if (!player.isAlive() || player.isDeadOrDying()) {
 			minecraftmod$resetFallState(player);
 			return;

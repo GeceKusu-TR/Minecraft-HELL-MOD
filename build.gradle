@@ -30,15 +30,19 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.11.4"
 }
 
 processResources {
 	filteringCharset = 'UTF-8'
 	def version = project.version
+	def fabricApiVersion = project.fabric_api_version
 	inputs.property "version", version
+	inputs.property "fabric_api_version", fabricApiVersion
 
 	filesMatching("fabric.mod.json") {
-		expand "version": version
+		expand "version": version, "fabric_api_version": fabricApiVersion
 	}
 }
 
@@ -46,6 +50,37 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = 'UTF-8'
 	it.options.release = 21
 	it.options.compilerArgs.add("-Xlint:deprecation")
+}
+
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+tasks.register("verifyResourceJson") {
+	description = "Parses every JSON resource before the project is packaged."
+	group = "verification"
+	inputs.files(fileTree("src") { include "**/*.json" })
+	doLast {
+		def parser = new groovy.json.JsonSlurper()
+		def failures = []
+		fileTree("src").matching { include "**/*.json" }.files.sort().each { resource ->
+			try {
+				parser.parse(resource, "UTF-8")
+			} catch (Exception exception) {
+				failures << "${resource}: ${exception.message}"
+			}
+		}
+		if (!failures.isEmpty()) {
+			throw new GradleException("Invalid JSON resources:\n" + failures.join("\n"))
+		}
+	}
+}
+
+tasks.named("check") {
+	dependsOn("verifyResourceJson")
 }
 
 java {

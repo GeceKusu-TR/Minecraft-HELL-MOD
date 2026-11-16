@@ -76,12 +76,23 @@ Paths in the tables are relative to `src/main/java/com/example/minecraftmod/`, u
 | `DeathMessageRules.java`, `minecraftmod/death_messages.txt`, `ServerPlayerRulesMixin.java` | The prepared first-death messages were not used by the mod. | Load the message lines from the resource and display one randomly in red when a player dies; category headings and comments are ignored. |
 | `SkeletonLeaderRules.java`, `mixin/AbstractSkeletonAimMixin.java` | Hardcore skeleton groups had no readable leader structure or formation limits, and all skeletons used the same arrow spread. | In Hardcore Overworld only, create a leader for groups of at least two skeletons within 16 blocks; give the leader 2× health and 1.5× tighter aim, give up to 10 guards 1.5× health and 0.7× spread, show a sparse red aura, and keep guards in a preferred 3-block / hard 6-block formation around the leader. |
 
+## Follow-up hardening - 2026-11-16
+
+| Area | Problem | Applied correction |
+| --- | --- | --- |
+| `DifficultyScalingRules.java`, `MinecraftMod.java`, `ServerPlayerRulesMixin.java` | The process-global multiplier was reset by every non-completed player's tick. In multiplayer, the active difficulty could oscillate between 1.0x and the completed value. | Reset the process-local value only at server boundaries, restore it when a player joins, and keep an observed completion active for the lifetime of that server. |
+| `PerformanceRules.java` | The entity insertion path used the unscaled 20-Enderman limit after removing an existing entity, while the other paths used 1.5x/2x limits. | Centralize the effective limit and use it for spawning, insertion and periodic cleanup. |
+| `GrassCurseRules.java` | A cursed grass stack held on the inventory cursor was not found during respawn transfer. | Include the carried stack when transferring the active curse. The fake-player texture URL now uses HTTPS. |
+| `FireRules.java`, `OxygenRules.java` | Hardcore fire duration and deadly-altitude damage bypassed the post-completion difficulty multiplier. | Apply the same scaling path used by the other hazards. |
+
 ## Verification
 
 - Standard Gradle build compiles common and client sources and produces the remapped mod jar.
-- `./gradlew.bat -I tools/bug-audit.init.gradle runServer` loads Fabric 1.21.11 in server mode, force-loads server mixin targets and checks eight grass/effect regressions. A result marker is required, since a launcher crash can otherwise still return exit code zero.
+- `./gradlew.bat test` runs the JUnit regression tests for difficulty scaling and the Enderman cap.
+- `./gradlew.bat -I tools/bug-audit.init.gradle runServer` loads Fabric 1.21.11 in server mode, force-loads server mixin targets and checks 13 regression assertions. A result marker is required, since a launcher crash can otherwise still return exit code zero.
 - Audit mod lives only in `src/audit` and is not included in the production jar.
-- All 15 production JSON files parsed successfully. This checks syntax, not every Minecraft data codec or runtime datapack combination.
+- `verifyResourceJson` parses all 18 tracked JSON resources. This checks syntax, not every Minecraft data codec or runtime datapack combination.
+- GitHub Actions runs the build, tests, JSON validation and server audit on every push and pull request.
 - The server audit uses `--initSettings`: no gameplay world is opened, no EULA is accepted and no LAN service is started.
 - Multiplayer attribution, interactive inventory/drop/respawn, client rendering, actual combat totals and long-duration gameplay still need an in-game verification pass. Server mixin loading alone does not establish those behaviors.
 - Minecraft was open during the build; the existing install task skipped copying the jar into the live mods directory.

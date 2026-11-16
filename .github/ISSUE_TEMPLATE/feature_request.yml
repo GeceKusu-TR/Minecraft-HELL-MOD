@@ -1,0 +1,27 @@
+name: Özellik önerisi
+description: Geriye dönük uyumluluk ve test planı olan bir özellik önerin.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Çözülen problem
+      description: Bu öneri hangi oyuncu veya geliştirici ihtiyacını karşılıyor?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Önerilen davranış
+      description: Kullanıcıya görünen davranışı ve varsa ayarları açıklayın.
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Uyumluluk ve test planı
+      description: Mevcut dünyalar, çok oyunculu sunucular ve test edilecek senaryolar üzerindeki etkisini yazın.
+    validations:
+      required: true

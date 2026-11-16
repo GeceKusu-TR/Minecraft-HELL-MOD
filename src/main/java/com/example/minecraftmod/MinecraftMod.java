@@ -1,6 +1,7 @@
 package com.example.minecraftmod;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -21,7 +22,10 @@ public class MinecraftMod implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(CompletionHudPayload.TYPE, CompletionHudPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(LightningWaveFlashPayload.TYPE, LightningWaveFlashPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(DeathMessagePayload.TYPE, DeathMessagePayload.CODEC);
+		ServerLifecycleEvents.SERVER_STARTING.register(server -> DifficultyScalingRules.reset());
+		ServerLifecycleEvents.SERVER_STOPPED.register(server -> DifficultyScalingRules.reset());
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			DifficultyScalingRules.restoreFromPlayer(handler.player);
 			boolean completed = EndCompletionRules.isCompleted(handler.player);
 			boolean hardcoreEscalated = EndCompletionRules.isHardcoreEscalated(handler.player);
 			ServerPlayNetworking.send(handler.player, new CompletionHudPayload(completed, hardcoreEscalated));

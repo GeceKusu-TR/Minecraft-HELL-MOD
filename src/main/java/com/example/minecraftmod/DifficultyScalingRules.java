@@ -14,6 +14,17 @@ public final class DifficultyScalingRules {
 	private DifficultyScalingRules() {
 	}
 
+	/**
+	 * Resets the process-local multiplier when a new Minecraft server starts.
+	 *
+	 * <p>The actual completion state is stored on players, so it is restored on
+	 * join. Keeping this reset at the server boundary prevents an integrated
+	 * server from inheriting the previous world's difficulty.</p>
+	 */
+	public static void reset() {
+		activeMultiplier = BASE_MULTIPLIER;
+	}
+
 	public static void activateNormalEscalation() {
 		activeMultiplier = FIRST_CLEAR_MULTIPLIER;
 	}
@@ -23,13 +34,18 @@ public final class DifficultyScalingRules {
 	}
 
 	public static void restoreFromPlayer(ServerPlayer player) {
-		boolean completed = player.getTags().contains(COMPLETED_TAG);
-		if (player.level().getLevelData().isHardcore() && completed) {
+		restoreFromCompletion(player.level().getLevelData().isHardcore(), player.getTags().contains(COMPLETED_TAG));
+	}
+
+	static void restoreFromCompletion(boolean hardcore, boolean completed) {
+		if (!completed) {
+			return;
+		}
+
+		if (hardcore) {
 			activateHardcoreEscalation();
-		} else if (!player.level().getLevelData().isHardcore() && completed) {
-			activateNormalEscalation();
 		} else {
-			activeMultiplier = BASE_MULTIPLIER;
+			activateNormalEscalation();
 		}
 	}
 

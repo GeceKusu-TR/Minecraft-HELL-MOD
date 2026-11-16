@@ -3,10 +3,11 @@ package com.example.minecraftmod.client;
 import com.example.minecraftmod.CompletionHudPayload;
 import com.example.minecraftmod.LightningWaveFlashPayload;
 import com.example.minecraftmod.DeathMessagePayload;
+import com.example.minecraftmod.MinecraftMod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
@@ -27,7 +28,7 @@ public class MinecraftModClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(DeathMessagePayload.TYPE, (payload, context) ->
 			context.client().execute(() -> DeathMessageHudState.setMessage(payload.message())));
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> HardModeHudState.setCompleted(false, false));
-		HudRenderCallback.EVENT.register((guiGraphics, deltaTracker) -> {
+		HudElementRegistry.addFirst(MinecraftMod.id("hard_mode_label"), (guiGraphics, deltaTracker) -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			if (minecraft.level != null && HardModeHudState.shouldRender()) {
 				guiGraphics.drawString(minecraft.font, HardModeHudState.label(), 4, 4, HARD_MODE_RED, true);
