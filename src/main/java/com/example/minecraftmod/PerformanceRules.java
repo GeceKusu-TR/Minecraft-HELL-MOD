@@ -21,6 +21,11 @@ public final class PerformanceRules {
 	private PerformanceRules() {
 	}
 
+	/** Returns the current per-world Enderman cap used by every spawn path. */
+	public static int endEndermanLimit() {
+		return DifficultyScalingRules.more(MAX_END_ENDERMEN);
+	}
+
 	public static boolean shouldRunEveryTicks(ServerLevel level, String key, int intervalTicks) {
 		long gameTime = level.getGameTime();
 		Map<String, Long> levelTicks = LAST_RUN_TICKS.computeIfAbsent(level, ignored -> new HashMap<>());
@@ -54,7 +59,7 @@ public final class PerformanceRules {
 			return true;
 		}
 
-		return countEndermen(level) < DifficultyScalingRules.more(MAX_END_ENDERMEN);
+		return countEndermen(level) < endEndermanLimit();
 	}
 
 	public static boolean canAddEntityToLevel(ServerLevel level, Entity entity) {
@@ -62,12 +67,12 @@ public final class PerformanceRules {
 			return true;
 		}
 
-		if (countEndermen(level) < DifficultyScalingRules.more(MAX_END_ENDERMEN)) {
+		if (countEndermen(level) < endEndermanLimit()) {
 			return true;
 		}
 
 		removeOneExistingEnderman(level, entity);
-		return countEndermen(level) < MAX_END_ENDERMEN;
+		return countEndermen(level) < endEndermanLimit();
 	}
 
 	public static void enforceEndEndermanLimit(ServerLevel level) {
@@ -82,7 +87,7 @@ public final class PerformanceRules {
 			}
 
 			count++;
-			if (count > DifficultyScalingRules.more(MAX_END_ENDERMEN)) {
+			if (count > endEndermanLimit()) {
 				entity.discard();
 			}
 		}
@@ -93,7 +98,7 @@ public final class PerformanceRules {
 		for (Entity entity : level.getAllEntities()) {
 			if (entity instanceof EnderMan && entity.isAlive()) {
 				count++;
-				if (count >= DifficultyScalingRules.more(MAX_END_ENDERMEN)) {
+				if (count >= endEndermanLimit()) {
 					return count;
 				}
 			}

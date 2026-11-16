@@ -29,16 +29,14 @@ public final class FireRules {
 	}
 
 	public static int fireTicksFor(Level level) {
-		if (level.getLevelData().isHardcore()) {
-			return HARDCORE_FIRE_TICKS;
-		}
-
-		int baseTicks = switch (level.getDifficulty()) {
-			case EASY -> EASY_FIRE_TICKS;
-			case NORMAL -> NORMAL_FIRE_TICKS;
-			case HARD -> HARD_FIRE_TICKS;
-			case PEACEFUL -> Integer.MAX_VALUE;
-		};
+		int baseTicks = level.getLevelData().isHardcore()
+			? HARDCORE_FIRE_TICKS
+			: switch (level.getDifficulty()) {
+				case EASY -> EASY_FIRE_TICKS;
+				case NORMAL -> NORMAL_FIRE_TICKS;
+				case HARD -> HARD_FIRE_TICKS;
+				case PEACEFUL -> Integer.MAX_VALUE;
+			};
 		return baseTicks == Integer.MAX_VALUE ? baseTicks : DifficultyScalingRules.more(baseTicks);
 	}
 

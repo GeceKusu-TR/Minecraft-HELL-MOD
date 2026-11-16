@@ -6,9 +6,17 @@
 name: build
 on: [pull_request, push]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - name: checkout repository
         uses: actions/checkout@v6
@@ -19,12 +27,24 @@ jobs:
         with:
           java-version: '21'
           distribution: 'microsoft'
+          cache: gradle
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build
+      - name: build and test
+        run: ./gradlew clean build
+      - name: run fabric server audit
+        run: ./gradlew -I tools/bug-audit.init.gradle runServer
       - name: capture build artifacts
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: Artifacts
-          path: build/libs/
+          if-no-files-found: ignore
+          path: |
+            build/libs/
+            build/reports/tests/
+            build/reports/problems/
+            build/audit/
+            run/logs/latest.log
